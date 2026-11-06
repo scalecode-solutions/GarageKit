@@ -1,0 +1,375 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0DFA8BE140A2348977F29EEE /* GarageLabApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508CBD0C631BB8FD4480D989 /* GarageLabApp.swift */; };
+		10057AAB8F1A3B17DA1D2923 /* MvAuth in Frameworks */ = {isa = PBXBuildFile; productRef = AA93AC1317690D91C2F9A133 /* MvAuth */; };
+		2AD55438DC8E6FE64939D522 /* Lab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B07469F8214F6B982646BB /* Lab.swift */; };
+		34526E2DBB4992D13D1E1525 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0540D37061ED95A73341A11 /* LoginView.swift */; };
+		56BEEBBCEEDD7138921921B7 /* GarageKit in Frameworks */ = {isa = PBXBuildFile; productRef = FBE707A8798C442C417F4D0B /* GarageKit */; };
+		A213E81F3AF4B07C39A10005 /* OwnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D347075974E1662BB88E44 /* OwnerView.swift */; };
+		BC1990782E2CFF5565F9A8BC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CA8080837D51E8DC407BF /* ContentView.swift */; };
+		F841A3CC411433176C73C6C1 /* AuthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343FD19B829811B4E20B1683 /* AuthModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		233CA8080837D51E8DC407BF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		343FD19B829811B4E20B1683 /* AuthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthModel.swift; sourceTree = "<group>"; };
+		508CBD0C631BB8FD4480D989 /* GarageLabApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarageLabApp.swift; sourceTree = "<group>"; };
+		611519061D97F1559C626F78 /* GarageLab.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GarageLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		87B07469F8214F6B982646BB /* Lab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lab.swift; sourceTree = "<group>"; };
+		B7D347075974E1662BB88E44 /* OwnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnerView.swift; sourceTree = "<group>"; };
+		C0C620B753C666AF18DB155A /* GarageKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GarageKit; path = ..; sourceTree = SOURCE_ROOT; };
+		F0540D37061ED95A73341A11 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C3F3D461270D24EB72190B5D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56BEEBBCEEDD7138921921B7 /* GarageKit in Frameworks */,
+				10057AAB8F1A3B17DA1D2923 /* MvAuth in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0E3647E06D05998033DCEBEF /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				C0C620B753C666AF18DB155A /* GarageKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		29E73274ECAB9A9968DE513B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				611519061D97F1559C626F78 /* GarageLab.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1895A7451DC71BB31E36A92 = {
+			isa = PBXGroup;
+			children = (
+				F57B9F11F7DFD98F833F5A27 /* GarageLab */,
+				0E3647E06D05998033DCEBEF /* Packages */,
+				29E73274ECAB9A9968DE513B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F57B9F11F7DFD98F833F5A27 /* GarageLab */ = {
+			isa = PBXGroup;
+			children = (
+				343FD19B829811B4E20B1683 /* AuthModel.swift */,
+				233CA8080837D51E8DC407BF /* ContentView.swift */,
+				508CBD0C631BB8FD4480D989 /* GarageLabApp.swift */,
+				87B07469F8214F6B982646BB /* Lab.swift */,
+				F0540D37061ED95A73341A11 /* LoginView.swift */,
+				B7D347075974E1662BB88E44 /* OwnerView.swift */,
+			);
+			path = GarageLab;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3BF808EF146F7B6A8011D68D /* GarageLab */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 691FB24D6C92E6570A26C4A0 /* Build configuration list for PBXNativeTarget "GarageLab" */;
+			buildPhases = (
+				629FA98A010D4B5DC16B4E60 /* Sources */,
+				C3F3D461270D24EB72190B5D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GarageLab;
+			packageProductDependencies = (
+				FBE707A8798C442C417F4D0B /* GarageKit */,
+				AA93AC1317690D91C2F9A133 /* MvAuth */,
+			);
+			productName = GarageLab;
+			productReference = 611519061D97F1559C626F78 /* GarageLab.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1E7EB49E0B8BF247E2E270B1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					3BF808EF146F7B6A8011D68D = {
+						DevelopmentTeam = YBFJUNLFT6;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = E4FFFFBB7773A319D842BAAB /* Build configuration list for PBXProject "GarageLab" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = A1895A7451DC71BB31E36A92;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A2FAC92DAF43406F6E6435DB /* XCRemoteSwiftPackageReference "MvAuth-iOS" */,
+				271329E661FDDAED678BEBEF /* XCLocalSwiftPackageReference ".." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 29E73274ECAB9A9968DE513B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3BF808EF146F7B6A8011D68D /* GarageLab */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		629FA98A010D4B5DC16B4E60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F841A3CC411433176C73C6C1 /* AuthModel.swift in Sources */,
+				BC1990782E2CFF5565F9A8BC /* ContentView.swift in Sources */,
+				0DFA8BE140A2348977F29EEE /* GarageLabApp.swift in Sources */,
+				2AD55438DC8E6FE64939D522 /* Lab.swift in Sources */,
+				34526E2DBB4992D13D1E1525 /* LoginView.swift in Sources */,
+				A213E81F3AF4B07C39A10005 /* OwnerView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		077B8D2CEDAC524F0CA3AC75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = GarageLab;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.scalecode.GarageLab;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		39F91746E7D1E4E8F3BC34FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = YBFJUNLFT6;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		8F292E923A3123A452B280DD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = YBFJUNLFT6;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		D17EB913B0F63CE6CE484176 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = GarageLab;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.scalecode.GarageLab;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		691FB24D6C92E6570A26C4A0 /* Build configuration list for PBXNativeTarget "GarageLab" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D17EB913B0F63CE6CE484176 /* Debug */,
+				077B8D2CEDAC524F0CA3AC75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E4FFFFBB7773A319D842BAAB /* Build configuration list for PBXProject "GarageLab" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F292E923A3123A452B280DD /* Debug */,
+				39F91746E7D1E4E8F3BC34FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		271329E661FDDAED678BEBEF /* XCLocalSwiftPackageReference ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A2FAC92DAF43406F6E6435DB /* XCRemoteSwiftPackageReference "MvAuth-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scalecode-solutions/MvAuth-iOS.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA93AC1317690D91C2F9A133 /* MvAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A2FAC92DAF43406F6E6435DB /* XCRemoteSwiftPackageReference "MvAuth-iOS" */;
+			productName = MvAuth;
+		};
+		FBE707A8798C442C417F4D0B /* GarageKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GarageKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 1E7EB49E0B8BF247E2E270B1 /* Project object */;
+}

@@ -1,0 +1,46 @@
+# GarageLab — the standalone harness for GarageKit. Generate the project with:
+#   cd Demo && xcodegen generate
+# The generated GarageLab.xcodeproj is committed (matching TraxLab).
+name: GarageLab
+options:
+  bundleIdPrefix: dev.scalecode
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+packages:
+  GarageKit:
+    path: ..
+  MvAuth-iOS:
+    url: https://github.com/scalecode-solutions/MvAuth-iOS.git
+    branch: main
+settings:
+  base:
+    DEVELOPMENT_TEAM: YBFJUNLFT6
+    SWIFT_VERSION: "6.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+targets:
+  GarageLab:
+    type: application
+    platform: iOS
+    sources:
+      - GarageLab
+    dependencies:
+      - package: GarageKit
+      - package: MvAuth-iOS
+        product: MvAuth
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.scalecode.GarageLab
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: GarageLab
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+schemes:
+  GarageLab:
+    build:
+      targets:
+        GarageLab: all
+    run:
+      config: Debug

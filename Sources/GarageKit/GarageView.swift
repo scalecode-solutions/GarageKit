@@ -85,6 +85,9 @@ struct GarageBackdrop: View {
                 ]
             )
         }
+        // The tinted stops are translucent: without an opaque base the host's
+        // light-mode background bleeds through and washes out the text.
+        .background(.black)
         .animation(.smooth(duration: 0.8), value: tint)
     }
 }

@@ -24,6 +24,14 @@ public protocol GarageTransport: Sendable {
     func createGrant(doorID: UUID, granteeID: UUID, label: String, expiresAt: Date?) async throws -> GarageGrant
     func revokeGrant(id: UUID) async throws
     func listGrants(doorID: UUID) async throws -> [GarageGrant]
+    /// The people the caller may share a door with.
+    func listContacts() async throws -> [GarageContact]
+}
+
+public extension GarageTransport {
+    /// Default for transports that can't list people (stubs, older fakes): nobody
+    /// to pick. The Connect transport overrides it.
+    func listContacts() async throws -> [GarageContact] { [] }
 }
 
 /// `GarageTransport` over Connect/protobuf. Wraps the codegen'd client and injects
@@ -166,6 +174,15 @@ public struct ConnectGarageTransport: GarageTransport {
         req.doorID = doorID.uuidString
         let r = try value(await client.listGrants(request: req, headers: try await authHeaders()))
         return try r.grants.map(grant)
+    }
+
+    public func listContacts() async throws -> [GarageContact] {
+        let r = try value(await client.listContacts(request: Garage_V1_ListContactsRequest(),
+                                                    headers: try await authHeaders()))
+        return try r.contacts.map {
+            GarageContact(id: try uuid($0.id), name: $0.name,
+                          avatar: $0.avatar.isEmpty ? nil : Data(base64Encoded: $0.avatar))
+        }
     }
 
     private func grant(_ g: Garage_V1_Grant) throws -> GarageGrant {

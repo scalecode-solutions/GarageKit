@@ -52,6 +52,12 @@ public protocol Garage_V1_GarageServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `listGrants`(request: Garage_V1_ListGrantsRequest, headers: Connect.Headers) async -> ResponseMessage<Garage_V1_ListGrantsResponse>
 
+    /// ListContacts returns the caller's friends from the social graph (id, display
+    /// name, avatar): the people a door can be shared with. Only a picker's list;
+    /// CreateGrant still checks visibility on its own.
+    @available(iOS 13, *)
+    func `listContacts`(request: Garage_V1_ListContactsRequest, headers: Connect.Headers) async -> ResponseMessage<Garage_V1_ListContactsResponse>
+
     /// ListEvents returns the audit history for a door the caller owns.
     @available(iOS 13, *)
     func `listEvents`(request: Garage_V1_ListEventsRequest, headers: Connect.Headers) async -> ResponseMessage<Garage_V1_ListEventsResponse>
@@ -111,6 +117,11 @@ public final class Garage_V1_GarageServiceClient: Garage_V1_GarageServiceClientI
     }
 
     @available(iOS 13, *)
+    public func `listContacts`(request: Garage_V1_ListContactsRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Garage_V1_ListContactsResponse> {
+        return await self.client.unary(path: "/garage.v1.GarageService/ListContacts", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `listEvents`(request: Garage_V1_ListEventsRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Garage_V1_ListEventsResponse> {
         return await self.client.unary(path: "/garage.v1.GarageService/ListEvents", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -134,6 +145,7 @@ public final class Garage_V1_GarageServiceClient: Garage_V1_GarageServiceClientI
             public static let renameDoor = Connect.MethodSpec(name: "RenameDoor", service: "garage.v1.GarageService", type: .unary)
             public static let revokeGrant = Connect.MethodSpec(name: "RevokeGrant", service: "garage.v1.GarageService", type: .unary)
             public static let listGrants = Connect.MethodSpec(name: "ListGrants", service: "garage.v1.GarageService", type: .unary)
+            public static let listContacts = Connect.MethodSpec(name: "ListContacts", service: "garage.v1.GarageService", type: .unary)
             public static let listEvents = Connect.MethodSpec(name: "ListEvents", service: "garage.v1.GarageService", type: .unary)
             public static let registerDevice = Connect.MethodSpec(name: "RegisterDevice", service: "garage.v1.GarageService", type: .unary)
             public static let rotateDeviceToken = Connect.MethodSpec(name: "RotateDeviceToken", service: "garage.v1.GarageService", type: .unary)

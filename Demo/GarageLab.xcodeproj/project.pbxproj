@@ -12,7 +12,6 @@
 		2AD55438DC8E6FE64939D522 /* Lab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B07469F8214F6B982646BB /* Lab.swift */; };
 		34526E2DBB4992D13D1E1525 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0540D37061ED95A73341A11 /* LoginView.swift */; };
 		56BEEBBCEEDD7138921921B7 /* GarageKit in Frameworks */ = {isa = PBXBuildFile; productRef = FBE707A8798C442C417F4D0B /* GarageKit */; };
-		A213E81F3AF4B07C39A10005 /* OwnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D347075974E1662BB88E44 /* OwnerView.swift */; };
 		BC1990782E2CFF5565F9A8BC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CA8080837D51E8DC407BF /* ContentView.swift */; };
 		F841A3CC411433176C73C6C1 /* AuthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343FD19B829811B4E20B1683 /* AuthModel.swift */; };
 /* End PBXBuildFile section */
@@ -23,7 +22,6 @@
 		508CBD0C631BB8FD4480D989 /* GarageLabApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarageLabApp.swift; sourceTree = "<group>"; };
 		611519061D97F1559C626F78 /* GarageLab.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GarageLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		87B07469F8214F6B982646BB /* Lab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lab.swift; sourceTree = "<group>"; };
-		B7D347075974E1662BB88E44 /* OwnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnerView.swift; sourceTree = "<group>"; };
 		C0C620B753C666AF18DB155A /* GarageKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GarageKit; path = ..; sourceTree = SOURCE_ROOT; };
 		F0540D37061ED95A73341A11 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -74,7 +72,6 @@
 				508CBD0C631BB8FD4480D989 /* GarageLabApp.swift */,
 				87B07469F8214F6B982646BB /* Lab.swift */,
 				F0540D37061ED95A73341A11 /* LoginView.swift */,
-				B7D347075974E1662BB88E44 /* OwnerView.swift */,
 			);
 			path = GarageLab;
 			sourceTree = "<group>";
@@ -150,7 +147,6 @@
 				0DFA8BE140A2348977F29EEE /* GarageLabApp.swift in Sources */,
 				2AD55438DC8E6FE64939D522 /* Lab.swift in Sources */,
 				34526E2DBB4992D13D1E1525 /* LoginView.swift in Sources */,
-				A213E81F3AF4B07C39A10005 /* OwnerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

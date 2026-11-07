@@ -63,6 +63,30 @@ public struct GarageGrant: Identifiable, Sendable, Equatable {
     public let granteeID: UUID
     public let label: String
     public let expiresAt: Date?
+
+    public init(id: UUID, doorID: UUID, granteeID: UUID, label: String, expiresAt: Date?) {
+        self.id = id
+        self.doorID = doorID
+        self.granteeID = granteeID
+        self.label = label
+        self.expiresAt = expiresAt
+    }
+}
+
+/// Someone the signed-in user may share a door with (a friend in the social
+/// graph). Only a picker's list: the server still decides whether a share is
+/// allowed.
+public struct GarageContact: Identifiable, Sendable, Equatable, Hashable {
+    public let id: UUID
+    public let name: String
+    /// A small profile image (decoded from the server's base64), if they have one.
+    public let avatar: Data?
+
+    public init(id: UUID, name: String, avatar: Data? = nil) {
+        self.id = id
+        self.name = name
+        self.avatar = avatar
+    }
 }
 
 /// One of the user's own presses — the local audit trail.

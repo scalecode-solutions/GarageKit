@@ -35,19 +35,43 @@ struct GarageLabHost: View {
     }
 
     var body: some View {
-        TabView {
-            Tab("Garage", systemImage: "door.garage.closed") {
-                GarageView(engine: engine)
-            }
-            Tab("Owner", systemImage: "key.horizontal") {
-                // Sign-out wipes this account's local trail (production hosts do the same).
-                OwnerView(engine: engine, userID: userID) {
-                    engine.wipeLocalStore()
-                    auth.logOut()
+        // Hosted the way a production host does it: the garage screen in a
+        // navigation stack, owner tools pushed from a toolbar gear. (A production
+        // host shows the gear only when one of engine.doors is owned; GarageLab
+        // always shows it so a fresh account can add its first device.)
+        NavigationStack {
+            GarageView(engine: engine)
+                .navigationTitle("Garage")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink {
+                            GarageOwnerView(engine: engine) { accountSection }
+                        } label: {
+                            Image(systemName: "gearshape")
+                        }
+                        .accessibilityLabel("Manage doors")
+                    }
                 }
-            }
         }
         .task { engine.start() }
         .onDisappear { engine.stop() }
+    }
+
+    /// GarageLab's own rows, appended to the kit's owner screen.
+    private var accountSection: some View {
+        Section {
+            LabeledContent("User ID") {
+                Text(userID).font(.caption.monospaced()).textSelection(.enabled)
+            }
+            LabeledContent("Server", value: auth.server.rawValue)
+            // Sign-out wipes this account's local trail (production hosts do the same).
+            Button("Sign out", role: .destructive) {
+                engine.wipeLocalStore()
+                auth.logOut()
+            }
+        } header: {
+            Text("Account")
+        }
     }
 }

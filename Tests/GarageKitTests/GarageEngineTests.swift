@@ -15,6 +15,7 @@ final class FakeTransport: GarageTransport, Sendable {
         var pressAgainFlags: [Bool] = []
         var activityCalls = 0
         var holdTriggers = false
+        var contacts: [GarageContact] = []
         var gate: CheckedContinuation<Void, Never>?
     }
     let state = Mutex(State())
@@ -54,6 +55,7 @@ final class FakeTransport: GarageTransport, Sendable {
     func revokeGrant(id: UUID) async throws {}
     func renameDoor(id: UUID, to name: String) async throws {}
     func listGrants(doorID: UUID) async throws -> [GarageGrant] { [] }
+    func listContacts() async throws -> [GarageContact] { state.withLock { $0.contacts } }
 }
 
 @MainActor
@@ -90,6 +92,29 @@ struct GarageEngineTests {
     }
 
     // MARK: doors
+
+    @Test func listContactsPassesThrough() async throws {
+        let t = FakeTransport()
+        let ann = GarageContact(id: UUID(), name: "Ann", avatar: Data([1, 2]))
+        t.set { $0.contacts = [ann] }
+        #expect(try await makeEngine(t).listContacts() == [ann])
+    }
+
+    /// A transport that doesn't implement contacts (older fakes, host stubs)
+    /// still conforms, and offers nobody.
+    @Test func defaultContactsIsEmpty() async throws {
+        struct Minimal: GarageTransport {
+            func listDoors() async throws -> [GarageDoor] { [] }
+            func trigger(doorID: UUID, idempotencyKey: String, pressAgain: Bool) async -> TriggerOutcome { .done }
+            func listMyActivity(doorID: UUID, limit: Int) async throws -> [GarageActivity] { [] }
+            func registerDevice(name: String) async throws -> RegisteredDevice { throw CancellationError() }
+            func renameDoor(id: UUID, to name: String) async throws {}
+            func createGrant(doorID: UUID, granteeID: UUID, label: String, expiresAt: Date?) async throws -> GarageGrant { throw CancellationError() }
+            func revokeGrant(id: UUID) async throws {}
+            func listGrants(doorID: UUID) async throws -> [GarageGrant] { [] }
+        }
+        #expect(try await Minimal().listContacts().isEmpty)
+    }
 
     @Test func refreshLoadsDoors() async {
         let t = FakeTransport(); t.set { $0.doors = [door] }

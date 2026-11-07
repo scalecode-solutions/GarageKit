@@ -241,7 +241,7 @@ public final class GarageEngine {
         }
     }
 
-    // MARK: owner admin (GarageLab)
+    // MARK: owner admin (GarageOwnerView)
 
     public func registerDevice(name: String) async throws -> RegisteredDevice {
         let d = try await transport.registerDevice(name: name)
@@ -264,5 +264,10 @@ public final class GarageEngine {
 
     public func listGrants(doorID: UUID) async throws -> [GarageGrant] {
         try await transport.listGrants(doorID: doorID)
+    }
+
+    /// The people the signed-in user may share a door with.
+    public func listContacts() async throws -> [GarageContact] {
+        try await transport.listContacts()
     }
 }

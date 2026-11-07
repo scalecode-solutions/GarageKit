@@ -17,8 +17,7 @@ enum LabServer: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    /// mvGarage base URL GarageKit talks to. Production hostname is a placeholder
-    /// until the mvchat.app subdomain is picked (DESIGN.md open question).
+    /// mvGarage base URL GarageKit talks to.
     var garageBaseURL: URL {
         switch self {
         case .production: URL(string: "https://garage.mvchat.app")!

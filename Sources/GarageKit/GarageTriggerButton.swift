@@ -132,7 +132,7 @@ public struct GarageTriggerButton: View {
 
             // Track + hold ring.
             Circle()
-                .stroke(.white.opacity(0.08), lineWidth: 8)
+                .stroke(.primary.opacity(0.08), lineWidth: 8)
                 .padding(10)
             Circle()
                 .trim(from: 0, to: holdProgress)

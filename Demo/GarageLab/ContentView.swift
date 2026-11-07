@@ -47,7 +47,6 @@ struct GarageLabHost: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
         .task { engine.start() }
         .onDisappear { engine.stop() }
     }

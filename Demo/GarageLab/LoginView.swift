@@ -79,7 +79,6 @@ struct LoginView: View {
             Spacer()
         }
         .padding(28)
-        .preferredColorScheme(.dark)
     }
 
     private func submit() {

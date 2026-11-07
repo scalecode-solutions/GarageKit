@@ -22,10 +22,6 @@ public struct GarageView: View {
                 .ignoresSafeArea()
             content
         }
-        // Dark inside the garage screen only. preferredColorScheme would flip the
-        // host's whole window (the entire app) while this view is on screen.
-        .environment(\.colorScheme, .dark)
-        .toolbarColorScheme(.dark, for: .navigationBar)
     }
 
     @ViewBuilder
@@ -61,10 +57,17 @@ public struct GarageView: View {
 }
 
 /// A slow, living mesh gradient, tinted by the focused door's state. Static when
-/// Reduce Motion is on.
+/// Reduce Motion is on. Follows the host's color scheme: deep edges in dark,
+/// soft ones in light, the tinted glow in the middle either way.
 struct GarageBackdrop: View {
     var tint: Color
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var dark: Bool { colorScheme == .dark }
+    private var edge: Color { dark ? .black : Color(white: 0.97) }
+    private var rim: Color { dark ? Color(white: 0.06) : Color(white: 0.93) }
+    private var base: Color { dark ? .black : .white }
 
     var body: some View {
         TimelineView(.animation(minimumInterval: 1 / 12, paused: reduceMotion)) { ctx in
@@ -79,15 +82,15 @@ struct GarageBackdrop: View {
                     [0, 1], [0.5, 1], [1, 1],
                 ],
                 colors: [
-                    .black, Color(white: 0.06), .black,
-                    tint.opacity(0.10), tint.opacity(0.32), tint.opacity(0.08),
-                    .black, Color(white: 0.05), .black,
+                    edge, rim, edge,
+                    tint.opacity(0.10), tint.opacity(dark ? 0.32 : 0.24), tint.opacity(0.08),
+                    edge, rim, edge,
                 ]
             )
         }
-        // The tinted stops are translucent: without an opaque base the host's
-        // light-mode background bleeds through and washes out the text.
-        .background(.black)
+        // The tinted stops are translucent: an opaque base keeps whatever the host
+        // has underneath from bleeding through.
+        .background(base)
         .animation(.smooth(duration: 0.8), value: tint)
     }
 }

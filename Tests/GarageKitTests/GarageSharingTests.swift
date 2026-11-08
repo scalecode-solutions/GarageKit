@@ -19,6 +19,25 @@ struct GarageSharingTests {
         #expect(out.map(\.id) == [ann.id, cy.id]) // owner + Bob gone; case-insensitive name order
     }
 
+    @Test func expiredShareIsOfferedAgainActiveOneIsNot() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let ran = GarageGrant(id: UUID(), doorID: door, granteeID: bob.id, label: "", expiresAt: now.addingTimeInterval(-60))
+        let live = GarageGrant(id: UUID(), doorID: door, granteeID: ann.id, label: "", expiresAt: now.addingTimeInterval(60))
+        let out = GarageSharing.candidates(contacts: [ann, bob, cy], grants: [ran, live], owner: owner, now: now)
+        #expect(out.map(\.id) == [bob.id, cy.id]) // Bob's share ran out; Ann's still works
+        #expect(!GarageSharing.isActive(ran, now: now))
+        #expect(GarageSharing.isActive(live, now: now))
+        #expect(GarageSharing.isActive(grant(cy.id), now: now)) // no end date
+    }
+
+    @Test func accessLineSaysExpiredOnceTheEndHasPassed() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let g = { (end: Date?) in GarageGrant(id: UUID(), doorID: door, granteeID: ann.id, label: "", expiresAt: end) }
+        #expect(GarageSharing.accessLine(g(nil), now: now) == "No end date")
+        #expect(GarageSharing.accessLine(g(now.addingTimeInterval(60)), now: now).hasPrefix("Until "))
+        #expect(GarageSharing.accessLine(g(now.addingTimeInterval(-60)), now: now).hasPrefix("Expired "))
+    }
+
     @Test func candidatesWithNoGrantsIsEveryoneButOwner() {
         let out = GarageSharing.candidates(contacts: [bob, ann], grants: [], owner: owner)
         #expect(out.map(\.id) == [ann.id, bob.id])

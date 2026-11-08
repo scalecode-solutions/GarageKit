@@ -304,10 +304,10 @@ public struct GarageTriggerButton: View {
             ackBump += 1
         case .finished(let outcome):
             switch outcome {
-            case .done, .sent:
+            case .done:
                 successBump += 1
                 burst += 1
-            case .unknown:
+            case .sent, .unknown:
                 warnBump += 1
             default:
                 errorBump += 1
@@ -392,7 +392,8 @@ enum GarageStyle {
         case .pressedAgain: "checkmark"
         case .finished(let o):
             switch o {
-            case .done, .sent: "checkmark"
+            case .done: "checkmark"
+            case .sent: "questionmark.circle"
             case .offline: "wifi.slash"
             case .slowDown: "hourglass"
             case .denied: "lock.fill"
@@ -409,8 +410,8 @@ enum GarageStyle {
         case .pressedAgain: .green
         case .finished(let o):
             switch o {
-            case .done, .sent: .green
-            case .offline, .unknown: .orange
+            case .done: .green
+            case .sent, .offline, .unknown: .orange
             case .slowDown: .yellow
             case .denied, .refused, .failed: .red
             }
@@ -429,7 +430,8 @@ enum GarageStyle {
         case .finished(let o):
             switch o {
             case .done: return "Done"
-            case .sent: return "Sent"
+            // Sent, but the opener never confirmed: it may or may not have pressed.
+            case .sent: return "Sent, not confirmed"
             case .offline: return "The opener isn't connected"
             case .slowDown: return "Too many presses — give it a moment"
             case .denied: return "No access"

@@ -171,7 +171,7 @@ public struct GarageOwnerView<Extra: View>: View {
             GarageAvatar(name: name, data: avatar)
             VStack(alignment: .leading, spacing: 2) {
                 Text(name)
-                Text(grant.expiresAt.map { "Until \($0.formatted(date: .abbreviated, time: .shortened))" } ?? "No end date")
+                Text(GarageSharing.accessLine(grant))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

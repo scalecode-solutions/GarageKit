@@ -38,7 +38,8 @@ struct GarageHistoryView: View {
 
     static func symbol(_ k: GarageActivity.Kind) -> String {
         switch k {
-        case .done, .sent: "checkmark.circle.fill"
+        case .done: "checkmark.circle.fill"
+        case .sent: "questionmark.circle.fill"
         case .offline: "wifi.slash"
         case .refused, .expired: "hand.raised.fill"
         case .failed: "exclamationmark.triangle.fill"
@@ -47,8 +48,8 @@ struct GarageHistoryView: View {
 
     static func tint(_ k: GarageActivity.Kind) -> Color {
         switch k {
-        case .done, .sent: .green
-        case .offline: .orange
+        case .done: .green
+        case .sent, .offline: .orange
         case .refused, .expired, .failed: .red
         }
     }
@@ -56,7 +57,7 @@ struct GarageHistoryView: View {
     static func label(_ k: GarageActivity.Kind) -> String {
         switch k {
         case .done: "Used"
-        case .sent: "Sent"
+        case .sent: "Not confirmed"
         case .offline: "Opener offline"
         case .refused: "Declined"
         case .expired: "Too late"

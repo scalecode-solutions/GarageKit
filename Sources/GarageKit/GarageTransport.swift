@@ -26,12 +26,24 @@ public protocol GarageTransport: Sendable {
     func listGrants(doorID: UUID) async throws -> [GarageGrant]
     /// The people the caller may share a door with.
     func listContacts() async throws -> [GarageContact]
+    /// Change a door's profile; nil fields stay as they are. `motion: .zero`
+    /// clears the travel time (back to the host's default).
+    func updateDoor(id: UUID, name: String?, motion: Duration?, color: GarageDoorColor?) async throws -> GarageDoor
+    /// Add another door to a device you own, on another remote button.
+    func addDoor(deviceID: UUID, name: String, button: Int) async throws -> GarageDoor
 }
 
 public extension GarageTransport {
     /// Default for transports that can't list people (stubs, older fakes): nobody
     /// to pick. The Connect transport overrides it.
     func listContacts() async throws -> [GarageContact] { [] }
+    /// Defaults for transports without door profiles (stubs, older fakes).
+    func updateDoor(id: UUID, name: String?, motion: Duration?, color: GarageDoorColor?) async throws -> GarageDoor {
+        throw GarageTransportError.badResponse("door profiles not supported")
+    }
+    func addDoor(deviceID: UUID, name: String, button: Int) async throws -> GarageDoor {
+        throw GarageTransportError.badResponse("adding doors not supported")
+    }
 }
 
 /// `GarageTransport` over Connect/protobuf. Wraps the codegen'd client and injects
@@ -74,9 +86,44 @@ public struct ConnectGarageTransport: GarageTransport {
 
     public func listDoors() async throws -> [GarageDoor] {
         let r = try value(await client.listDoors(request: .init(), headers: try await authHeaders()))
-        return try r.doors.map { d in
-            GarageDoor(id: try uuid(d.id), name: d.name, online: d.online, owned: d.owned)
+        return try r.doors.map(door)
+    }
+
+    private func door(_ d: Garage_V1_Door) throws -> GarageDoor {
+        var device: GarageDeviceStatus?
+        if d.hasDevice, let id = UUID(uuidString: d.device.deviceID) {
+            let s = d.device
+            let date = { (ms: Int64) in ms > 0 ? Date(timeIntervalSince1970: Double(ms) / 1000) : nil }
+            device = GarageDeviceStatus(deviceID: id, firmware: s.firmware, rssi: s.rssi == 0 ? nil : Int(s.rssi),
+                                        lastSeen: date(s.lastSeen), lastHello: date(s.lastHello),
+                                        resetReason: s.resetReason, bootCount: Int(s.bootCount),
+                                        buttons: s.buttons.map(Int.init))
         }
+        return GarageDoor(id: try uuid(d.id), name: d.name, online: d.online, owned: d.owned,
+                          motion: d.motionMs > 0 ? .milliseconds(Int(d.motionMs)) : nil,
+                          color: GarageDoorColor(token: d.color), button: Int(d.button), device: device)
+    }
+
+    public func updateDoor(id: UUID, name: String?, motion: Duration?, color: GarageDoorColor?) async throws -> GarageDoor {
+        var req = Garage_V1_UpdateDoorRequest()
+        req.doorID = id.uuidString
+        if let name { req.name = name }
+        if let motion {
+            let c = motion.components
+            req.motionMs = Int32(c.seconds * 1000 + c.attoseconds / 1_000_000_000_000_000)
+        }
+        if let color { req.color = color.rawValue }
+        let r = try value(await client.updateDoor(request: req, headers: try await authHeaders()))
+        return try door(r.door)
+    }
+
+    public func addDoor(deviceID: UUID, name: String, button: Int) async throws -> GarageDoor {
+        var req = Garage_V1_AddDoorRequest()
+        req.deviceID = deviceID.uuidString
+        req.name = name
+        req.button = Int32(button)
+        let r = try value(await client.addDoor(request: req, headers: try await authHeaders()))
+        return try door(r.door)
     }
 
     public func trigger(doorID: UUID, idempotencyKey: String, pressAgain: Bool) async -> TriggerOutcome {

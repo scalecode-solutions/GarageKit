@@ -8,12 +8,83 @@ public struct GarageDoor: Identifiable, Sendable, Equatable, Hashable {
     public let online: Bool
     /// True if the user owns it (vs. was granted access).
     public let owned: Bool
+    /// How long this door takes to travel (the dial's "door moving" phase).
+    /// nil = not set: the engine uses the host's default.
+    public let motion: Duration?
+    /// The owner-picked color; `.standard` when none was chosen.
+    public let color: GarageDoorColor
+    /// Which button of the device's remote drives this door. Owners only (0
+    /// for a door shared with you).
+    public let button: Int
+    /// The device behind the door. Owners only; nil for a door shared with you.
+    public let device: GarageDeviceStatus?
 
-    public init(id: UUID, name: String, online: Bool, owned: Bool) {
+    public init(id: UUID, name: String, online: Bool, owned: Bool,
+                motion: Duration? = nil, color: GarageDoorColor = .standard,
+                button: Int = 0, device: GarageDeviceStatus? = nil) {
         self.id = id
         self.name = name
         self.online = online
         self.owned = owned
+        self.motion = motion
+        self.color = color
+        self.button = button
+        self.device = device
+    }
+}
+
+/// The owner's palette for telling doors apart at a glance. The server stores
+/// the raw value; an unknown value (a newer palette) reads as `.standard`. No
+/// red or orange: on the dial those mean something went wrong.
+public enum GarageDoorColor: String, CaseIterable, Sendable, Hashable {
+    case standard = ""
+    case cyan, sky, blue, indigo, purple, pink, teal, mint, yellow, brown
+
+    public init(token: String) { self = GarageDoorColor(rawValue: token) ?? .standard }
+
+    /// The ones an owner picks from (`.standard` is "no choice": it looks cyan).
+    public static var palette: [GarageDoorColor] { allCases.filter { $0 != .standard } }
+
+    public var label: String {
+        switch self {
+        case .standard: "Default"
+        default: rawValue.capitalized
+        }
+    }
+}
+
+/// What a door's device last said about itself. Shown to the owner only.
+public struct GarageDeviceStatus: Sendable, Equatable, Hashable {
+    public let deviceID: UUID
+    public let firmware: String
+    /// Wi-Fi signal in dBm; nil when unknown.
+    public let rssi: Int?
+    public let lastSeen: Date?
+    public let lastHello: Date?
+    public let resetReason: String
+    public let bootCount: Int
+    /// Remote buttons the firmware drives ([1] when it doesn't say).
+    public let buttons: [Int]
+
+    public init(deviceID: UUID, firmware: String = "", rssi: Int? = nil, lastSeen: Date? = nil,
+                lastHello: Date? = nil, resetReason: String = "", bootCount: Int = 0, buttons: [Int] = [1]) {
+        self.deviceID = deviceID
+        self.firmware = firmware
+        self.rssi = rssi
+        self.lastSeen = lastSeen
+        self.lastHello = lastHello
+        self.resetReason = resetReason
+        self.bootCount = bootCount
+        self.buttons = buttons.isEmpty ? [1] : buttons
+    }
+
+    /// A plain-words read of the Wi-Fi signal.
+    public var signal: String? {
+        guard let rssi else { return nil }
+        if rssi >= -55 { return "Strong" }
+        if rssi >= -67 { return "Good" }
+        if rssi >= -75 { return "Fair" }
+        return "Weak"
     }
 }
 

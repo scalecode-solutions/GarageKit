@@ -41,8 +41,20 @@ public protocol Garage_V1_GarageServiceClientInterface: Sendable {
 
     /// RenameDoor changes a door's display name. The door's identity is its id; the
     /// name is only a label, so every client picks it up on its next refresh.
+    /// (Kept for older clients; UpdateDoor covers it.)
     @available(iOS 13, *)
     func `renameDoor`(request: Garage_V1_RenameDoorRequest, headers: Connect.Headers) async -> ResponseMessage<Garage_V1_RenameDoorResponse>
+
+    /// UpdateDoor changes a door's profile: name, travel time, color. Only the
+    /// fields present are changed. Every viewer picks them up on refresh.
+    @available(iOS 13, *)
+    func `updateDoor`(request: Garage_V1_UpdateDoorRequest, headers: Connect.Headers) async -> ResponseMessage<Garage_V1_UpdateDoorResponse>
+
+    /// AddDoor adds another door to a device the caller owns, driven by another
+    /// button of the same remote (one board, several openers). The device
+    /// reconnects to pick it up.
+    @available(iOS 13, *)
+    func `addDoor`(request: Garage_V1_AddDoorRequest, headers: Connect.Headers) async -> ResponseMessage<Garage_V1_AddDoorResponse>
 
     /// RevokeGrant tombstones a grant (the kill switch). Access dies immediately.
     @available(iOS 13, *)
@@ -107,6 +119,16 @@ public final class Garage_V1_GarageServiceClient: Garage_V1_GarageServiceClientI
     }
 
     @available(iOS 13, *)
+    public func `updateDoor`(request: Garage_V1_UpdateDoorRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Garage_V1_UpdateDoorResponse> {
+        return await self.client.unary(path: "/garage.v1.GarageService/UpdateDoor", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `addDoor`(request: Garage_V1_AddDoorRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Garage_V1_AddDoorResponse> {
+        return await self.client.unary(path: "/garage.v1.GarageService/AddDoor", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `revokeGrant`(request: Garage_V1_RevokeGrantRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Garage_V1_RevokeGrantResponse> {
         return await self.client.unary(path: "/garage.v1.GarageService/RevokeGrant", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -143,6 +165,8 @@ public final class Garage_V1_GarageServiceClient: Garage_V1_GarageServiceClientI
             public static let listMyActivity = Connect.MethodSpec(name: "ListMyActivity", service: "garage.v1.GarageService", type: .unary)
             public static let createGrant = Connect.MethodSpec(name: "CreateGrant", service: "garage.v1.GarageService", type: .unary)
             public static let renameDoor = Connect.MethodSpec(name: "RenameDoor", service: "garage.v1.GarageService", type: .unary)
+            public static let updateDoor = Connect.MethodSpec(name: "UpdateDoor", service: "garage.v1.GarageService", type: .unary)
+            public static let addDoor = Connect.MethodSpec(name: "AddDoor", service: "garage.v1.GarageService", type: .unary)
             public static let revokeGrant = Connect.MethodSpec(name: "RevokeGrant", service: "garage.v1.GarageService", type: .unary)
             public static let listGrants = Connect.MethodSpec(name: "ListGrants", service: "garage.v1.GarageService", type: .unary)
             public static let listContacts = Connect.MethodSpec(name: "ListContacts", service: "garage.v1.GarageService", type: .unary)

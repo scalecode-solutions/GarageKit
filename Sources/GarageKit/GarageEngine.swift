@@ -36,15 +36,35 @@ public final class GarageEngine {
     /// The user's own presses per door, newest first (local audit trail).
     public private(set) var activity: [UUID: [GarageActivity]] = [:]
 
-    /// How long the "door moving" phase lasts after a confirmed press. Starts at
-    /// `config.motionDuration`; hosts (GarageLab) may tune it live.
+    /// The default "door moving" time after a confirmed press, for a door whose
+    /// owner hasn't set its own travel time. Starts at `config.motionDuration`.
     public var motionDuration: Duration
+
+    /// The door the user last looked at (the switcher and swipe pages follow
+    /// it). Remembered per user on this device; cleared on sign-out.
+    public var selectedDoorID: UUID? {
+        didSet {
+            guard selectedDoorID != oldValue else { return }
+            defaults.set(selectedDoorID?.uuidString, forKey: selectionKey)
+        }
+    }
+
+    /// The selected door, else the first one.
+    public var focusedDoor: GarageDoor? {
+        doors.first { $0.id == selectedDoorID } ?? doors.first
+    }
+
+    /// How long this door's "door moving" phase lasts: its own travel time,
+    /// else the default.
+    public func motion(for door: GarageDoor) -> Duration { door.motion ?? motionDuration }
 
     public let config: GarageConfig
     private let transport: any GarageTransport
     private var refreshTask: Task<Void, Never>?
     private var phaseTasks: [UUID: Task<Void, Never>] = [:]
     private var store: GarageStore?
+    private let defaults = UserDefaults.standard
+    private var selectionKey: String { "GarageKit.selectedDoor.\(config.currentUserID.uuidString)" }
     /// Bumped by stop(): any work that started before it must not write after it.
     private var generation = 0
     /// Bumped per refresh(): a slower, older refresh must not apply its list.
@@ -66,6 +86,8 @@ public final class GarageEngine {
         self.config = config
         self.transport = transport ?? config.transport
         self.motionDuration = config.motionDuration
+        self.selectedDoorID = UserDefaults.standard.string(forKey: "GarageKit.selectedDoor.\(config.currentUserID.uuidString)")
+            .flatMap(UUID.init(uuidString:))
     }
 
     public func phase(for door: GarageDoor) -> Phase { phases[door.id] ?? .idle }
@@ -136,6 +158,8 @@ public final class GarageEngine {
         activity = [:]
         doors = []
         loadState = .idle
+        selectedDoorID = nil
+        defaults.removeObject(forKey: selectionKey)
     }
 
     /// Reload the door list now.
@@ -211,7 +235,7 @@ public final class GarageEngine {
         if outcome == .done && !again {
             // Confirmed press: show the door moving, then the checkmark.
             phases[door.id] = .moving
-            schedule(door, after: motionDuration, then: .finished(.done), andReset: true)
+            schedule(door, after: motion(for: door), then: .finished(.done), andReset: true)
         } else if again && outcome.isSuccess {
             phases[door.id] = .pressedAgain
             schedule(door, after: resultHold, then: .idle, andReset: false)
@@ -254,6 +278,31 @@ public final class GarageEngine {
     public func renameDoor(_ door: GarageDoor, to name: String) async throws {
         try await transport.renameDoor(id: door.id, to: name)
         await refresh()
+    }
+
+    /// Change a door's profile (owner). nil fields stay; `motion: .zero` clears
+    /// the travel time. Every viewer picks it up on their next refresh.
+    @discardableResult
+    public func updateDoor(_ door: GarageDoor, name: String? = nil, motion: Duration? = nil,
+                           color: GarageDoorColor? = nil) async throws -> GarageDoor {
+        let d = try await transport.updateDoor(id: door.id, name: name, motion: motion, color: color)
+        await refresh()
+        return d
+    }
+
+    /// Add another door to a device you own, on another remote button (owner).
+    @discardableResult
+    public func addDoor(on device: GarageDeviceStatus, name: String, button: Int) async throws -> GarageDoor {
+        let d = try await transport.addDoor(deviceID: device.deviceID, name: name, button: button)
+        await refresh()
+        return d
+    }
+
+    /// The owned doors driven by the same device as `door` (itself included),
+    /// in button order. Empty when the door has no device status.
+    public func doorsOnDevice(of door: GarageDoor) -> [GarageDoor] {
+        guard let id = door.device?.deviceID else { return [] }
+        return doors.filter { $0.device?.deviceID == id }.sorted { $0.button < $1.button }
     }
 
     public func createGrant(doorID: UUID, granteeID: UUID, label: String, expiresAt: Date? = nil) async throws -> GarageGrant {

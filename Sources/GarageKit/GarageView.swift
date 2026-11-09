@@ -5,23 +5,32 @@ import SwiftUI
 public struct GarageView: View {
     @Bindable var engine: GarageEngine
     var appearance: GarageAppearance
-    @State private var selection: UUID?
 
     public init(engine: GarageEngine, appearance: GarageAppearance = .standard) {
         self.engine = engine
         self.appearance = appearance
     }
 
-    private var focused: GarageDoor? {
-        engine.doors.first { $0.id == selection } ?? engine.doors.first
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var focused: GarageDoor? { engine.focusedDoor }
+
+    /// The swipe pages and the title menu both drive the engine's selection, so
+    /// they agree and it's remembered.
+    private var selection: Binding<UUID?> {
+        Binding(get: { engine.focusedDoor?.id }, set: { engine.selectedDoorID = $0 })
     }
 
     public var body: some View {
         ZStack {
-            GarageBackdrop(tint: focused.map { GarageStyle.tint(engine.phase(for: $0), online: $0.online) } ?? .cyan)
+            GarageBackdrop(tint: focused.map {
+                GarageStyle.tint(engine.phase(for: $0), online: $0.online,
+                                 idle: $0.color.color(dark: colorScheme == .dark))
+            } ?? .cyan)
                 .ignoresSafeArea()
             content
         }
+        .modifier(DoorSwitcher(engine: engine, selection: selection))
     }
 
     @ViewBuilder
@@ -45,13 +54,44 @@ public struct GarageView: View {
         case (_, 1):
             GarageTriggerButton(door: engine.doors[0], engine: engine, appearance: appearance)
         default:
-            TabView(selection: $selection) {
+            TabView(selection: selection) {
                 ForEach(engine.doors) { door in
                     GarageTriggerButton(door: door, engine: engine, appearance: appearance)
                         .tag(Optional(door.id))
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
+        }
+    }
+}
+
+/// With two or more doors, the navigation title becomes the focused door's
+/// name with a menu to switch ("East Door ▾"), alongside the swipe pages. With
+/// one door the host's own title stays.
+struct DoorSwitcher: ViewModifier {
+    let engine: GarageEngine
+    let selection: Binding<UUID?>
+
+    func body(content: Content) -> some View {
+        if engine.doors.count > 1, let focused = engine.focusedDoor {
+            content
+                .navigationTitle(focused.name)
+                .toolbarTitleMenu {
+                    ForEach(engine.doors) { door in
+                        Button {
+                            withAnimation(.smooth) { selection.wrappedValue = door.id }
+                        } label: {
+                            Label {
+                                Text(door.name)
+                            } icon: {
+                                Image(systemName: door.id == focused.id ? "checkmark.circle.fill" : "circle.fill")
+                                    .foregroundStyle(DoorTint(color: door.color))
+                            }
+                        }
+                    }
+                }
+        } else {
+            content
         }
     }
 }

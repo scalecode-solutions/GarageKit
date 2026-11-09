@@ -16,6 +16,8 @@ final class FakeTransport: GarageTransport, Sendable {
         var activityCalls = 0
         var holdTriggers = false
         var contacts: [GarageContact] = []
+        var updates: [(UUID, String?, Duration?, GarageDoorColor?)] = []
+        var added: [(UUID, String, Int)] = []
         var gate: CheckedContinuation<Void, Never>?
     }
     let state = Mutex(State())
@@ -56,6 +58,28 @@ final class FakeTransport: GarageTransport, Sendable {
     func renameDoor(id: UUID, to name: String) async throws {}
     func listGrants(doorID: UUID) async throws -> [GarageGrant] { [] }
     func listContacts() async throws -> [GarageContact] { state.withLock { $0.contacts } }
+    /// Applies the change to `doors` like the server would.
+    func updateDoor(id: UUID, name: String?, motion: Duration?, color: GarageDoorColor?) async throws -> GarageDoor {
+        try state.withLock { s in
+            s.updates.append((id, name, motion, color))
+            guard let i = s.doors.firstIndex(where: { $0.id == id }) else { throw GarageTransportError.rpc(code: "not_found", message: "") }
+            let d = s.doors[i]
+            let m: Duration? = motion.map { $0 == .zero ? nil : $0 } ?? d.motion
+            let new = GarageDoor(id: d.id, name: name ?? d.name, online: d.online, owned: d.owned,
+                                 motion: m, color: color ?? d.color, button: d.button, device: d.device)
+            s.doors[i] = new
+            return new
+        }
+    }
+    func addDoor(deviceID: UUID, name: String, button: Int) async throws -> GarageDoor {
+        state.withLock { s in
+            s.added.append((deviceID, name, button))
+            let dev = s.doors.first { $0.device?.deviceID == deviceID }?.device
+            let d = GarageDoor(id: UUID(), name: name, online: true, owned: true, button: button, device: dev)
+            s.doors.append(d)
+            return d
+        }
+    }
 }
 
 @MainActor

@@ -171,28 +171,115 @@ public nonisolated enum Garage_V1_CommandStatus: SwiftProtobuf.Enum, Swift.CaseI
 }
 
 /// Door is a single garage door the caller may see.
-public nonisolated struct Garage_V1_Door: Sendable {
+public nonisolated struct Garage_V1_Door: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var id: String = String()
+  public var id: String {
+    get {_storage._id}
+    set {_uniqueStorage()._id = newValue}
+  }
 
-  public var name: String = String()
+  public var name: String {
+    get {_storage._name}
+    set {_uniqueStorage()._name = newValue}
+  }
 
-  public var state: Garage_V1_DoorState = .unspecified
+  public var state: Garage_V1_DoorState {
+    get {_storage._state}
+    set {_uniqueStorage()._state = newValue}
+  }
 
   /// is the device socket currently connected
-  public var online: Bool = false
+  public var online: Bool {
+    get {_storage._online}
+    set {_uniqueStorage()._online = newValue}
+  }
 
   /// e.g. ["toggle"]
-  public var caps: [String] = []
+  public var caps: [String] {
+    get {_storage._caps}
+    set {_uniqueStorage()._caps = newValue}
+  }
 
   /// true if the caller owns it (vs. granted)
-  public var owned: Bool = false
+  public var owned: Bool {
+    get {_storage._owned}
+    set {_uniqueStorage()._owned = newValue}
+  }
 
   /// epoch ms of the last state change
-  public var updatedAt: Int64 = 0
+  public var updatedAt: Int64 {
+    get {_storage._updatedAt}
+    set {_uniqueStorage()._updatedAt = newValue}
+  }
+
+  /// Travel time for the dial's "door moving" phase, in ms. 0 = not set (the
+  /// client uses its own default).
+  public var motionMs: Int32 {
+    get {_storage._motionMs}
+    set {_uniqueStorage()._motionMs = newValue}
+  }
+
+  /// A palette token chosen by the owner (e.g. "teal"); "" = the default. The
+  /// client maps it to light and dark colors.
+  public var color: String {
+    get {_storage._color}
+    set {_uniqueStorage()._color = newValue}
+  }
+
+  /// Which button of the device's remote drives this door (1..4).
+  public var button: Int32 {
+    get {_storage._button}
+    set {_uniqueStorage()._button = newValue}
+  }
+
+  /// The device behind the door: owners only (unset for granted doors).
+  public var device: Garage_V1_DeviceStatus {
+    get {_storage._device ?? Garage_V1_DeviceStatus()}
+    set {_uniqueStorage()._device = newValue}
+  }
+  /// Returns true if `device` has been explicitly set.
+  public var hasDevice: Bool {_storage._device != nil}
+  /// Clears the value of `device`. Subsequent reads from it will return its default value.
+  public mutating func clearDevice() {_uniqueStorage()._device = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+/// DeviceStatus is what the device last said about itself (its hello), shown
+/// to the door's owner only.
+public nonisolated struct Garage_V1_DeviceStatus: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var deviceID: String = String()
+
+  /// e.g. "c3-0.6.4"
+  public var firmware: String = String()
+
+  /// Wi-Fi signal, dBm (0 = unknown)
+  public var rssi: Int32 = 0
+
+  /// epoch ms of the last socket activity (0 = never)
+  public var lastSeen: Int64 = 0
+
+  /// epoch ms of the last hello (0 = never)
+  public var lastHello: Int64 = 0
+
+  /// why it last restarted (from the hello)
+  public var resetReason: String = String()
+
+  public var bootCount: Int64 = 0
+
+  /// buttons the firmware drives (empty = [1])
+  public var buttons: [Int32] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -615,6 +702,111 @@ public nonisolated struct Garage_V1_RenameDoorResponse: Sendable {
   fileprivate var _door: Garage_V1_Door? = nil
 }
 
+public nonisolated struct Garage_V1_UpdateDoorRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var doorID: String = String()
+
+  public var name: String {
+    get {_name ?? String()}
+    set {_name = newValue}
+  }
+  /// Returns true if `name` has been explicitly set.
+  public var hasName: Bool {self._name != nil}
+  /// Clears the value of `name`. Subsequent reads from it will return its default value.
+  public mutating func clearName() {self._name = nil}
+
+  /// 0 clears it; else 2000..60000
+  public var motionMs: Int32 {
+    get {_motionMs ?? 0}
+    set {_motionMs = newValue}
+  }
+  /// Returns true if `motionMs` has been explicitly set.
+  public var hasMotionMs: Bool {self._motionMs != nil}
+  /// Clears the value of `motionMs`. Subsequent reads from it will return its default value.
+  public mutating func clearMotionMs() {self._motionMs = nil}
+
+  /// a palette token, or "" for the default
+  public var color: String {
+    get {_color ?? String()}
+    set {_color = newValue}
+  }
+  /// Returns true if `color` has been explicitly set.
+  public var hasColor: Bool {self._color != nil}
+  /// Clears the value of `color`. Subsequent reads from it will return its default value.
+  public mutating func clearColor() {self._color = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _name: String? = nil
+  fileprivate var _motionMs: Int32? = nil
+  fileprivate var _color: String? = nil
+}
+
+public nonisolated struct Garage_V1_UpdateDoorResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var door: Garage_V1_Door {
+    get {_door ?? Garage_V1_Door()}
+    set {_door = newValue}
+  }
+  /// Returns true if `door` has been explicitly set.
+  public var hasDoor: Bool {self._door != nil}
+  /// Clears the value of `door`. Subsequent reads from it will return its default value.
+  public mutating func clearDoor() {self._door = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _door: Garage_V1_Door? = nil
+}
+
+public nonisolated struct Garage_V1_AddDoorRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// from an owned door's DeviceStatus
+  public var deviceID: String = String()
+
+  public var name: String = String()
+
+  /// 1..4, not already used on that device
+  public var button: Int32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Garage_V1_AddDoorResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var door: Garage_V1_Door {
+    get {_door ?? Garage_V1_Door()}
+    set {_door = newValue}
+  }
+  /// Returns true if `door` has been explicitly set.
+  public var hasDoor: Bool {self._door != nil}
+  /// Clears the value of `door`. Subsequent reads from it will return its default value.
+  public mutating func clearDoor() {self._door = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _door: Garage_V1_Door? = nil
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate nonisolated let _protobuf_package = "garage.v1"
@@ -633,7 +825,147 @@ nonisolated extension Garage_V1_CommandStatus: SwiftProtobuf._ProtoNameProviding
 
 nonisolated extension Garage_V1_Door: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Door"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{1}state\0\u{1}online\0\u{1}caps\0\u{1}owned\0\u{3}updated_at\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{1}state\0\u{1}online\0\u{1}caps\0\u{1}owned\0\u{3}updated_at\0\u{3}motion_ms\0\u{1}color\0\u{1}button\0\u{1}device\0")
+
+  fileprivate class _StorageClass {
+    var _id: String = String()
+    var _name: String = String()
+    var _state: Garage_V1_DoorState = .unspecified
+    var _online: Bool = false
+    var _caps: [String] = []
+    var _owned: Bool = false
+    var _updatedAt: Int64 = 0
+    var _motionMs: Int32 = 0
+    var _color: String = String()
+    var _button: Int32 = 0
+    var _device: Garage_V1_DeviceStatus? = nil
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _id = source._id
+      _name = source._name
+      _state = source._state
+      _online = source._online
+      _caps = source._caps
+      _owned = source._owned
+      _updatedAt = source._updatedAt
+      _motionMs = source._motionMs
+      _color = source._color
+      _button = source._button
+      _device = source._device
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularStringField(value: &_storage._id) }()
+        case 2: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
+        case 3: try { try decoder.decodeSingularEnumField(value: &_storage._state) }()
+        case 4: try { try decoder.decodeSingularBoolField(value: &_storage._online) }()
+        case 5: try { try decoder.decodeRepeatedStringField(value: &_storage._caps) }()
+        case 6: try { try decoder.decodeSingularBoolField(value: &_storage._owned) }()
+        case 7: try { try decoder.decodeSingularInt64Field(value: &_storage._updatedAt) }()
+        case 8: try { try decoder.decodeSingularInt32Field(value: &_storage._motionMs) }()
+        case 9: try { try decoder.decodeSingularStringField(value: &_storage._color) }()
+        case 10: try { try decoder.decodeSingularInt32Field(value: &_storage._button) }()
+        case 11: try { try decoder.decodeSingularMessageField(value: &_storage._device) }()
+        default: break
+        }
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      if !_storage._id.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._id, fieldNumber: 1)
+      }
+      if !_storage._name.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._name, fieldNumber: 2)
+      }
+      if _storage._state != .unspecified {
+        try visitor.visitSingularEnumField(value: _storage._state, fieldNumber: 3)
+      }
+      if _storage._online != false {
+        try visitor.visitSingularBoolField(value: _storage._online, fieldNumber: 4)
+      }
+      if !_storage._caps.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._caps, fieldNumber: 5)
+      }
+      if _storage._owned != false {
+        try visitor.visitSingularBoolField(value: _storage._owned, fieldNumber: 6)
+      }
+      if _storage._updatedAt != 0 {
+        try visitor.visitSingularInt64Field(value: _storage._updatedAt, fieldNumber: 7)
+      }
+      if _storage._motionMs != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._motionMs, fieldNumber: 8)
+      }
+      if !_storage._color.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._color, fieldNumber: 9)
+      }
+      if _storage._button != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._button, fieldNumber: 10)
+      }
+      try { if let v = _storage._device {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+      } }()
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Garage_V1_Door, rhs: Garage_V1_Door) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._id != rhs_storage._id {return false}
+        if _storage._name != rhs_storage._name {return false}
+        if _storage._state != rhs_storage._state {return false}
+        if _storage._online != rhs_storage._online {return false}
+        if _storage._caps != rhs_storage._caps {return false}
+        if _storage._owned != rhs_storage._owned {return false}
+        if _storage._updatedAt != rhs_storage._updatedAt {return false}
+        if _storage._motionMs != rhs_storage._motionMs {return false}
+        if _storage._color != rhs_storage._color {return false}
+        if _storage._button != rhs_storage._button {return false}
+        if _storage._device != rhs_storage._device {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Garage_V1_DeviceStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DeviceStatus"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}device_id\0\u{1}firmware\0\u{1}rssi\0\u{3}last_seen\0\u{3}last_hello\0\u{3}reset_reason\0\u{3}boot_count\0\u{1}buttons\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -641,51 +973,56 @@ nonisolated extension Garage_V1_Door: SwiftProtobuf.Message, SwiftProtobuf._Mess
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.id) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
-      case 3: try { try decoder.decodeSingularEnumField(value: &self.state) }()
-      case 4: try { try decoder.decodeSingularBoolField(value: &self.online) }()
-      case 5: try { try decoder.decodeRepeatedStringField(value: &self.caps) }()
-      case 6: try { try decoder.decodeSingularBoolField(value: &self.owned) }()
-      case 7: try { try decoder.decodeSingularInt64Field(value: &self.updatedAt) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.deviceID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.firmware) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.rssi) }()
+      case 4: try { try decoder.decodeSingularInt64Field(value: &self.lastSeen) }()
+      case 5: try { try decoder.decodeSingularInt64Field(value: &self.lastHello) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.resetReason) }()
+      case 7: try { try decoder.decodeSingularInt64Field(value: &self.bootCount) }()
+      case 8: try { try decoder.decodeRepeatedInt32Field(value: &self.buttons) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.id.isEmpty {
-      try visitor.visitSingularStringField(value: self.id, fieldNumber: 1)
+    if !self.deviceID.isEmpty {
+      try visitor.visitSingularStringField(value: self.deviceID, fieldNumber: 1)
     }
-    if !self.name.isEmpty {
-      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    if !self.firmware.isEmpty {
+      try visitor.visitSingularStringField(value: self.firmware, fieldNumber: 2)
     }
-    if self.state != .unspecified {
-      try visitor.visitSingularEnumField(value: self.state, fieldNumber: 3)
+    if self.rssi != 0 {
+      try visitor.visitSingularInt32Field(value: self.rssi, fieldNumber: 3)
     }
-    if self.online != false {
-      try visitor.visitSingularBoolField(value: self.online, fieldNumber: 4)
+    if self.lastSeen != 0 {
+      try visitor.visitSingularInt64Field(value: self.lastSeen, fieldNumber: 4)
     }
-    if !self.caps.isEmpty {
-      try visitor.visitRepeatedStringField(value: self.caps, fieldNumber: 5)
+    if self.lastHello != 0 {
+      try visitor.visitSingularInt64Field(value: self.lastHello, fieldNumber: 5)
     }
-    if self.owned != false {
-      try visitor.visitSingularBoolField(value: self.owned, fieldNumber: 6)
+    if !self.resetReason.isEmpty {
+      try visitor.visitSingularStringField(value: self.resetReason, fieldNumber: 6)
     }
-    if self.updatedAt != 0 {
-      try visitor.visitSingularInt64Field(value: self.updatedAt, fieldNumber: 7)
+    if self.bootCount != 0 {
+      try visitor.visitSingularInt64Field(value: self.bootCount, fieldNumber: 7)
+    }
+    if !self.buttons.isEmpty {
+      try visitor.visitPackedInt32Field(value: self.buttons, fieldNumber: 8)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Garage_V1_Door, rhs: Garage_V1_Door) -> Bool {
-    if lhs.id != rhs.id {return false}
-    if lhs.name != rhs.name {return false}
-    if lhs.state != rhs.state {return false}
-    if lhs.online != rhs.online {return false}
-    if lhs.caps != rhs.caps {return false}
-    if lhs.owned != rhs.owned {return false}
-    if lhs.updatedAt != rhs.updatedAt {return false}
+  public static func ==(lhs: Garage_V1_DeviceStatus, rhs: Garage_V1_DeviceStatus) -> Bool {
+    if lhs.deviceID != rhs.deviceID {return false}
+    if lhs.firmware != rhs.firmware {return false}
+    if lhs.rssi != rhs.rssi {return false}
+    if lhs.lastSeen != rhs.lastSeen {return false}
+    if lhs.lastHello != rhs.lastHello {return false}
+    if lhs.resetReason != rhs.resetReason {return false}
+    if lhs.bootCount != rhs.bootCount {return false}
+    if lhs.buttons != rhs.buttons {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1616,6 +1953,163 @@ nonisolated extension Garage_V1_RenameDoorResponse: SwiftProtobuf.Message, Swift
   }
 
   public static func ==(lhs: Garage_V1_RenameDoorResponse, rhs: Garage_V1_RenameDoorResponse) -> Bool {
+    if lhs._door != rhs._door {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Garage_V1_UpdateDoorRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UpdateDoorRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}door_id\0\u{1}name\0\u{3}motion_ms\0\u{1}color\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.doorID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._name) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self._motionMs) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._color) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.doorID.isEmpty {
+      try visitor.visitSingularStringField(value: self.doorID, fieldNumber: 1)
+    }
+    try { if let v = self._name {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._motionMs {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._color {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Garage_V1_UpdateDoorRequest, rhs: Garage_V1_UpdateDoorRequest) -> Bool {
+    if lhs.doorID != rhs.doorID {return false}
+    if lhs._name != rhs._name {return false}
+    if lhs._motionMs != rhs._motionMs {return false}
+    if lhs._color != rhs._color {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Garage_V1_UpdateDoorResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UpdateDoorResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}door\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._door) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._door {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Garage_V1_UpdateDoorResponse, rhs: Garage_V1_UpdateDoorResponse) -> Bool {
+    if lhs._door != rhs._door {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Garage_V1_AddDoorRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AddDoorRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}device_id\0\u{1}name\0\u{1}button\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.deviceID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.button) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.deviceID.isEmpty {
+      try visitor.visitSingularStringField(value: self.deviceID, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    if self.button != 0 {
+      try visitor.visitSingularInt32Field(value: self.button, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Garage_V1_AddDoorRequest, rhs: Garage_V1_AddDoorRequest) -> Bool {
+    if lhs.deviceID != rhs.deviceID {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.button != rhs.button {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Garage_V1_AddDoorResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AddDoorResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}door\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._door) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._door {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Garage_V1_AddDoorResponse, rhs: Garage_V1_AddDoorResponse) -> Bool {
     if lhs._door != rhs._door {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

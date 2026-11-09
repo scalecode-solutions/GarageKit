@@ -89,7 +89,10 @@ public struct GarageTriggerButton: View {
 
     // MARK: dial
 
-    private var tint: Color { GarageStyle.tint(phase, online: door.online) }
+    @Environment(\.colorScheme) private var colorScheme
+    private var tint: Color {
+        GarageStyle.tint(phase, online: door.online, idle: door.color.color(dark: colorScheme == .dark))
+    }
 
     private var dial: some View {
         ZStack {
@@ -403,9 +406,11 @@ enum GarageStyle {
         }
     }
 
-    static func tint(_ phase: GarageEngine.Phase, online: Bool) -> Color {
+    /// `idle` is the door's own color (the owner's pick); it shows only while
+    /// nothing is happening. A press switches to the state colors.
+    static func tint(_ phase: GarageEngine.Phase, online: Bool, idle: Color = .cyan) -> Color {
         switch phase {
-        case .idle: online ? .cyan : .gray
+        case .idle: online ? idle : .gray
         case .sending, .moving: .cyan
         case .pressedAgain: .green
         case .finished(let o):

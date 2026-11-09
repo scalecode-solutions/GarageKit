@@ -43,4 +43,14 @@ public enum GarageSharing {
         return doors.first { $0.name.trimmingCharacters(in: .whitespacesAndNewlines)
             .compare(n, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }
     }
+
+    /// The footer under the button picker when adding a door to a board: plain
+    /// words for whether the board's firmware already drives that button.
+    public static func buttonNote(_ button: Int, wired: [Int]) -> String {
+        guard button > 0 else { return "Every button on this board already opens a door." }
+        if wired.contains(button) {
+            return "Program that remote button to the other opener first. Presses go to button \(button)."
+        }
+        return "This board doesn't drive button \(button) yet. Wire it and update the board; until then presses to this door won't go out."
+    }
 }

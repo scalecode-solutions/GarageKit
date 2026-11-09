@@ -1,10 +1,10 @@
 import SwiftUI
 import UIKit
 
-/// Owner tools: your doors first (rename, who has access, share, remove
-/// access), then the dial setting, then adding a new device. Push it inside the
-/// host's navigation stack; it brings no stack of its own. Hosts can append their
-/// own sections (an account row, sign-out) through `extra`.
+/// Owner tools: your doors (each opens its profile: name, color, travel time,
+/// who can open it, the device), then adding a new device. Push it inside the
+/// host's navigation stack; it brings no stack of its own. Hosts can append
+/// their own sections (an account row, sign-out) through `extra`.
 ///
 /// A grantee never needs this screen: show the entry point only when one of
 /// `engine.doors` is `owned`.
@@ -13,13 +13,9 @@ public struct GarageOwnerView<Extra: View>: View {
     let allowsAddingDevices: Bool
     let extra: Extra
 
-    @State private var names: [UUID: String] = [:]
-    @State private var grants: [UUID: [GarageGrant]] = [:]
-    @State private var contacts: [GarageContact] = []
-    @State private var message: String?
-    @State private var sharing: GarageDoor?
+    @State private var shares: [UUID: Int] = [:]
     @State private var addingDevice = false
-    @State private var removing: GarageGrant?
+    @State private var message: String?
 
     public init(engine: GarageEngine, allowsAddingDevices: Bool = true, @ViewBuilder extra: () -> Extra) {
         self.engine = engine
@@ -28,31 +24,25 @@ public struct GarageOwnerView<Extra: View>: View {
     }
 
     private var ownedDoors: [GarageDoor] { engine.doors.filter(\.owned) }
-    private var owner: UUID { engine.config.currentUserID }
 
     public var body: some View {
         Form {
-            if ownedDoors.isEmpty {
-                Section {
+            Section {
+                if ownedDoors.isEmpty {
                     ContentUnavailableView("No doors of your own", systemImage: "door.garage.closed",
                                            description: Text(allowsAddingDevices
                                                              ? "Add a device to set one up." : "Doors you own appear here."))
                 }
-            }
-
-            ForEach(ownedDoors) { door in
-                doorSection(door)
-                    .task(id: door.id) { await loadGrants(door) }
-            }
-
-            Section {
-                Stepper(value: motionSeconds, in: 2...20, step: 0.5) {
-                    LabeledContent("Door motion", value: "\(motionSeconds.wrappedValue.formatted()) s")
+                ForEach(ownedDoors) { door in
+                    NavigationLink {
+                        GarageDoorProfileView(engine: engine, doorID: door.id)
+                    } label: {
+                        GarageDoorRow(door: door, shares: shares[door.id])
+                    }
+                    .task(id: door.id) { await loadShares(door) }
                 }
             } header: {
-                Text("Dial")
-            } footer: {
-                Text("How long the dial shows the door moving after a confirmed press, on this device. Time your door and match it.")
+                if !ownedDoors.isEmpty { Text("Your doors") }
             }
 
             if allowsAddingDevices {
@@ -61,7 +51,7 @@ public struct GarageOwnerView<Extra: View>: View {
                         Label("Add a device", systemImage: "plus.circle")
                     }
                 } footer: {
-                    Text("Sets up a new door. Your existing doors aren't changed.")
+                    Text("Sets up a new board and its door. To add a door to a board you already have, open that door.")
                 }
             }
 
@@ -76,165 +66,65 @@ public struct GarageOwnerView<Extra: View>: View {
             }
         }
         .navigationTitle("Doors")
-        .task { await loadContacts() }
         .refreshable {
             await engine.refresh()
-            await loadContacts()
-            for door in ownedDoors { await loadGrants(door) }
-        }
-        .sheet(item: $sharing) { door in
-            GarageShareSheet(
-                door: door,
-                candidates: GarageSharing.candidates(contacts: contacts, grants: grants[door.id] ?? [], owner: owner)
-            ) { contact, until in
-                _ = try await engine.createGrant(doorID: door.id, granteeID: contact.id,
-                                                 label: contact.name, expiresAt: until)
-                await loadGrants(door)
-            }
+            for door in ownedDoors { await loadShares(door) }
         }
         .sheet(isPresented: $addingDevice) {
             GarageAddDeviceSheet(engine: engine)
         }
-        .confirmationDialog(
-            removing.map { "Remove \(GarageSharing.displayName(for: $0, contacts: contacts))'s access?" } ?? "",
-            isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
-            titleVisibility: .visible,
-            presenting: removing
-        ) { grant in
-            Button("Remove access", role: .destructive) { Task { await remove(grant) } }
-        } message: { _ in
-            Text("Their access ends right away. You can share again later.")
-        }
     }
 
-    // MARK: door section
-
-    @ViewBuilder
-    private func doorSection(_ door: GarageDoor) -> some View {
-        Section {
-            HStack {
-                TextField("Door name", text: nameBinding(door))
-                    .submitLabel(.done)
-                    .onSubmit { Task { await rename(door) } }
-                if trimmedName(door) != door.name && !trimmedName(door).isEmpty {
-                    Button("Save") { Task { await rename(door) } }
-                        .buttonStyle(.borderless)
-                        .transition(.opacity)
-                }
-            }
-            .animation(.smooth, value: names[door.id])
-
-            HStack(spacing: 8) {
-                Circle()
-                    .fill(door.online ? Color.green : Color.secondary)
-                    .frame(width: 8, height: 8)
-                Text(door.online ? "Online" : "Offline")
-                    .foregroundStyle(.secondary)
-            }
-
-            if let list = grants[door.id] {
-                if list.isEmpty {
-                    Text("Only you can open this door.")
-                        .foregroundStyle(.secondary)
-                }
-                ForEach(list) { grant in
-                    personRow(grant)
-                        .swipeActions {
-                            Button("Remove", role: .destructive) { removing = grant }
-                        }
-                        .contextMenu {
-                            Button("Remove access", systemImage: "person.badge.minus", role: .destructive) {
-                                removing = grant
-                            }
-                        }
-                }
-            } else {
-                HStack { Spacer(); ProgressView(); Spacer() }
-            }
-
-            Button { sharing = door } label: {
-                Label("Share…", systemImage: "person.badge.plus")
-            }
-        } header: {
-            Text(door.name)
-        } footer: {
-            if !(grants[door.id] ?? []).isEmpty {
-                Text("Swipe a person to remove their access.")
-            }
-        }
-    }
-
-    private func personRow(_ grant: GarageGrant) -> some View {
-        let name = GarageSharing.displayName(for: grant, contacts: contacts)
-        let avatar = contacts.first { $0.id == grant.granteeID }?.avatar
-        return HStack(spacing: 12) {
-            GarageAvatar(name: name, data: avatar)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(name)
-                Text(GarageSharing.accessLine(grant))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    // MARK: actions
-
-    private var motionSeconds: Binding<Double> {
-        Binding(
-            get: {
-                let c = engine.motionDuration.components
-                return Double(c.seconds) + Double(c.attoseconds) / 1e18
-            },
-            set: { engine.motionDuration = .milliseconds(Int($0 * 1000)) }
-        )
-    }
-
-    private func nameBinding(_ door: GarageDoor) -> Binding<String> {
-        Binding(get: { names[door.id] ?? door.name }, set: { names[door.id] = $0 })
-    }
-
-    private func trimmedName(_ door: GarageDoor) -> String {
-        (names[door.id] ?? door.name).trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private func rename(_ door: GarageDoor) async {
-        let name = trimmedName(door)
-        guard !name.isEmpty, name != door.name else { return }
+    private func loadShares(_ door: GarageDoor) async {
         do {
-            try await engine.renameDoor(door, to: name)
-            names[door.id] = nil
+            shares[door.id] = try await engine.listGrants(doorID: door.id)
+                .filter { GarageSharing.isActive($0) }.count
             message = nil
-        } catch { message = "Couldn't rename the door." }
-    }
-
-    private func remove(_ grant: GarageGrant) async {
-        removing = nil
-        do {
-            try await engine.revokeGrant(id: grant.id)
-            if let door = ownedDoors.first(where: { $0.id == grant.doorID }) { await loadGrants(door) }
-            message = nil
-        } catch { message = "Couldn't remove access. Try again." }
-    }
-
-    /// On failure keep the last list and say so: an empty list would read as
-    /// "nobody has access" when we just couldn't ask.
-    private func loadGrants(_ door: GarageDoor) async {
-        do {
-            grants[door.id] = try await engine.listGrants(doorID: door.id)
         } catch is CancellationError {
         } catch {
             message = "Couldn't load who has access."
         }
     }
+}
 
-    private func loadContacts() async {
-        do {
-            contacts = try await engine.listContacts()
-        } catch is CancellationError {
-        } catch {
-            message = "Couldn't load your contacts."
+/// One door in a list: online dot, name, its color, and who can open it.
+struct GarageDoorRow: View {
+    let door: GarageDoor
+    var shares: Int?
+
+    var body: some View {
+        HStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                .fill(DoorTint(color: door.color))
+                .frame(width: 22, height: 22)
+                .overlay(alignment: .bottomTrailing) {
+                    Circle()
+                        .fill(door.online ? Color.green : Color.gray)
+                        .frame(width: 9, height: 9)
+                        .overlay(Circle().stroke(Color(uiColor: .systemBackground), lineWidth: 1.5))
+                        .offset(x: 3, y: 3)
+                }
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(door.name)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityValue(door.online ? "Online" : "Offline")
+    }
+
+    private var subtitle: String {
+        var parts = [door.online ? "Online" : "Offline"]
+        switch shares {
+        case .none: break
+        case 0?: parts.append("Only you")
+        case 1?: parts.append("Shared with 1 person")
+        case let n?: parts.append("Shared with \(n) people")
+        }
+        return parts.joined(separator: " · ")
     }
 }
 

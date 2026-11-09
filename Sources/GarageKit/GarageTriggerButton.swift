@@ -166,15 +166,7 @@ public struct GarageTriggerButton: View {
 
     private var caption: some View {
         VStack(spacing: 6) {
-            HStack(spacing: 8) {
-                Image(systemName: "circle.fill")
-                    .font(.system(size: 8))
-                    .foregroundStyle(door.online ? .green : .secondary)
-                    .symbolEffect(.pulse, options: .repeat(.continuous),
-                                  isActive: door.online && !reduceMotion)
-                Text(door.name)
-                    .font(.title2.weight(.semibold))
-            }
+            DoorNameSwitcher(door: door, engine: engine)
             Text(status)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -442,6 +434,59 @@ enum GarageStyle {
             case .denied: return "No access"
             case .unknown(let m), .refused(let m), .failed(let m): return m
             }
+        }
+    }
+}
+
+/// The door's name under the dial, with its online dot. With two or more doors
+/// it's also the switcher: a chevron appears and tapping it lists the doors
+/// (alongside the swipe pages). With one door it's a plain label, never a dead
+/// menu. It lives in the content, not the navigation bar, so it looks the same
+/// in every host and never competes with the host's own title.
+struct DoorNameSwitcher: View {
+    let door: GarageDoor
+    let engine: GarageEngine
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var label: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "circle.fill")
+                .font(.system(size: 8))
+                .foregroundStyle(door.online ? .green : .secondary)
+                .symbolEffect(.pulse, options: .repeat(.continuous),
+                              isActive: door.online && !reduceMotion)
+            Text(door.name)
+                .font(.title2.weight(.semibold))
+            if engine.doors.count > 1 {
+                Image(systemName: "chevron.down")
+                    .font(.footnote.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    var body: some View {
+        if engine.doors.count > 1 {
+            Menu {
+                ForEach(engine.doors) { other in
+                    Button {
+                        withAnimation(.smooth) { engine.selectedDoorID = other.id }
+                    } label: {
+                        Label {
+                            Text(other.name)
+                        } icon: {
+                            Image(systemName: other.id == door.id ? "checkmark.circle.fill" : "circle.fill")
+                                .foregroundStyle(DoorTint(color: other.color))
+                        }
+                    }
+                }
+            } label: {
+                label.contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(door.name), switch door")
+        } else {
+            label
         }
     }
 }

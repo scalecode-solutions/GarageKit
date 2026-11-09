@@ -15,8 +15,10 @@ provider, and never logs in through the kit. Swift 6, iOS 26.
   again" while the door moves, "Last used today at 3:30 PM", and a history sheet.
   It follows the host's light/dark scheme. `GarageAppearance` changes wording only.
   At rest the dial glows in the door's own color; a press switches to the state
-  colors. With two or more doors the title becomes the door's name with a menu
-  (“East Door ⌄”) alongside swipe pages; both follow `engine.selectedDoorID`,
+  colors. The door's name sits under the dial; with two or more doors it gains a
+  chevron and becomes a menu (“East Door ⌄”) alongside swipe pages. The kit
+  never touches the navigation title, so the host's own title stays. Both
+  follow `engine.selectedDoorID`,
   which is remembered per user and cleared by `wipeLocalStore()`.
 - **`GarageOwnerView(engine:allowsAddingDevices:extra:)`** is the owner screen.
   Push it inside the host's navigation stack:

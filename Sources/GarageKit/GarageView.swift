@@ -15,8 +15,8 @@ public struct GarageView: View {
 
     private var focused: GarageDoor? { engine.focusedDoor }
 
-    /// The swipe pages and the title menu both drive the engine's selection, so
-    /// they agree and it's remembered.
+    /// The swipe pages and the name menu under the dial both drive the engine's
+    /// selection, so they agree and it's remembered.
     private var selection: Binding<UUID?> {
         Binding(get: { engine.focusedDoor?.id }, set: { engine.selectedDoorID = $0 })
     }
@@ -30,7 +30,6 @@ public struct GarageView: View {
                 .ignoresSafeArea()
             content
         }
-        .modifier(DoorSwitcher(engine: engine, selection: selection))
     }
 
     @ViewBuilder
@@ -61,40 +60,6 @@ public struct GarageView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
-        }
-    }
-}
-
-/// With two or more doors, the navigation title becomes the focused door's
-/// name with a menu to switch ("East Door ▾"), alongside the swipe pages. With
-/// one door the host's own title stays.
-struct DoorSwitcher: ViewModifier {
-    let engine: GarageEngine
-    let selection: Binding<UUID?>
-
-    func body(content: Content) -> some View {
-        if engine.doors.count > 1, let focused = engine.focusedDoor {
-            content
-                .navigationTitle(focused.name)
-                // Inline: iOS shows the menu's chevron ("East Door ▾") only on
-                // an inline title, and a large one would repeat the dial's name.
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbarTitleMenu {
-                    ForEach(engine.doors) { door in
-                        Button {
-                            withAnimation(.smooth) { selection.wrappedValue = door.id }
-                        } label: {
-                            Label {
-                                Text(door.name)
-                            } icon: {
-                                Image(systemName: door.id == focused.id ? "checkmark.circle.fill" : "circle.fill")
-                                    .foregroundStyle(DoorTint(color: door.color))
-                            }
-                        }
-                    }
-                }
-        } else {
-            content
         }
     }
 }

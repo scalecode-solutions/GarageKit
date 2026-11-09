@@ -2,10 +2,16 @@ import SwiftUI
 
 /// One door's profile, for its owner: name, color, travel time, who can open
 /// it, and the device behind it (plus adding another door to that device).
-/// Pushed from `GarageOwnerView`; reads the live door from the engine by id.
-struct GarageDoorProfileView: View {
+/// Pushed from `GarageOwnerView` (or by a host that links straight to a
+/// door's settings); reads the live door from the engine by id.
+public struct GarageDoorProfileView: View {
     let engine: GarageEngine
     let doorID: UUID
+
+    public init(engine: GarageEngine, doorID: UUID) {
+        self.engine = engine
+        self.doorID = doorID
+    }
 
     @Environment(\.colorScheme) private var colorScheme
     @State private var name = ""
@@ -21,7 +27,7 @@ struct GarageDoorProfileView: View {
     private var door: GarageDoor? { engine.doors.first { $0.id == doorID } }
     private var owner: UUID { engine.config.currentUserID }
 
-    var body: some View {
+    public var body: some View {
         Group {
             if let door {
                 form(door)

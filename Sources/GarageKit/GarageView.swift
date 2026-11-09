@@ -76,6 +76,9 @@ struct DoorSwitcher: ViewModifier {
         if engine.doors.count > 1, let focused = engine.focusedDoor {
             content
                 .navigationTitle(focused.name)
+                // Inline: iOS shows the menu's chevron ("East Door ▾") only on
+                // an inline title, and a large one would repeat the dial's name.
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbarTitleMenu {
                     ForEach(engine.doors) { door in
                         Button {

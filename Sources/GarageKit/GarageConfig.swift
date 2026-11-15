@@ -16,19 +16,27 @@ public struct GarageConfig: Sendable {
     /// The host's App-Group identifier for the local activity store (e.g.
     /// "group.com.example.app"); nil → the app's own container (GarageLab/dev).
     public let appGroup: String?
+    /// Where the local activity store lives, when the host wants it somewhere
+    /// specific (e.g. a folder it keeps out of device backups). The kit creates
+    /// the folder if needed and keeps its files in it (`Garage-<user id>.store`
+    /// and SQLite's `-wal`/`-shm` beside it). Takes precedence over `appGroup`;
+    /// nil → `appGroup`'s rules.
+    public let storeDirectory: URL?
 
     public init(baseURL: URL,
                 currentUserID: UUID,
                 tokenProvider: @escaping @Sendable () async -> String?,
                 holdToTrigger: Bool = true,
                 motionDuration: Duration = .seconds(6),
-                appGroup: String? = nil) {
+                appGroup: String? = nil,
+                storeDirectory: URL? = nil) {
         self.baseURL = baseURL
         self.currentUserID = currentUserID
         self.tokenProvider = tokenProvider
         self.holdToTrigger = holdToTrigger
         self.motionDuration = motionDuration
         self.appGroup = appGroup
+        self.storeDirectory = storeDirectory
     }
 
     /// The live transport — Connect/protobuf against mvGarage.

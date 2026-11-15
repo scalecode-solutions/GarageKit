@@ -6,8 +6,10 @@ provider, and never logs in through the kit. Swift 6, iOS 26.
 
 ## Using it
 
-- **`GarageConfig(baseURL:currentUserID:tokenProvider:holdToTrigger:motionDuration:appGroup:)`**
-  is the injection seam.
+- **`GarageConfig(baseURL:currentUserID:tokenProvider:holdToTrigger:motionDuration:appGroup:storeDirectory:)`**
+  is the injection seam. `storeDirectory` puts the local activity store in a
+  folder the host chooses (for example one it keeps out of device backups); the
+  kit creates it and keeps `Garage-<user id>.store` there.
 - **`GarageEngine`** is `@MainActor @Observable`. The host calls `start()` when
   the garage screen is shown, `stop()` when it goes away, and `wipeLocalStore()`
   on sign-out (clears the local activity trail).

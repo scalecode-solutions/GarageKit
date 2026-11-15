@@ -126,7 +126,7 @@ public final class GarageEngine {
         // started) and show it immediately, before the network answers.
         if store == nil {
             store = try? GarageStore(userID: config.currentUserID, appGroup: config.appGroup,
-                                     inMemory: storeInMemory)
+                                     directory: config.storeDirectory, inMemory: storeInMemory)
         }
         if let store { activity = store.all() }
         refreshTask = Task { [weak self] in

@@ -52,12 +52,15 @@ final class GarageStore {
     private let container: ModelContainer
     private var context: ModelContext { container.mainContext }
 
-    init(userID: UUID, appGroup: String?, inMemory: Bool = false) throws {
+    init(userID: UUID, appGroup: String?, directory: URL? = nil, inMemory: Bool = false) throws {
         let schema = Schema(versionedSchema: GarageSchemaV1.self)
         let name = "Garage-\(userID.uuidString)"
         let config: ModelConfiguration
         if inMemory {
             config = ModelConfiguration(name, schema: schema, isStoredInMemoryOnly: true)
+        } else if let directory {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            config = ModelConfiguration(name, schema: schema, url: directory.appending(path: "\(name).store"))
         } else if let appGroup,
                   let base = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
             config = ModelConfiguration(name, schema: schema, url: base.appending(path: "\(name).store"))

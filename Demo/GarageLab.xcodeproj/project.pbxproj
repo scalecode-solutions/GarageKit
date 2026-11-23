@@ -12,17 +12,32 @@
 		2AD55438DC8E6FE64939D522 /* Lab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B07469F8214F6B982646BB /* Lab.swift */; };
 		34526E2DBB4992D13D1E1525 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0540D37061ED95A73341A11 /* LoginView.swift */; };
 		56BEEBBCEEDD7138921921B7 /* GarageKit in Frameworks */ = {isa = PBXBuildFile; productRef = FBE707A8798C442C417F4D0B /* GarageKit */; };
+		842DB45D09E2EEC1D7E58A0B /* HostPeopleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B7117368482F8612ADB3E /* HostPeopleUITests.swift */; };
+		96713613583DECF879F02093 /* HostPeopleLab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 628D31BDF4CDBA12D1878A99 /* HostPeopleLab.swift */; };
 		BC1990782E2CFF5565F9A8BC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CA8080837D51E8DC407BF /* ContentView.swift */; };
 		F841A3CC411433176C73C6C1 /* AuthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343FD19B829811B4E20B1683 /* AuthModel.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		BE72C79C75A91A9B1C37D8DF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E7EB49E0B8BF247E2E270B1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3BF808EF146F7B6A8011D68D;
+			remoteInfo = GarageLab;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		233CA8080837D51E8DC407BF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		340B7117368482F8612ADB3E /* HostPeopleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostPeopleUITests.swift; sourceTree = "<group>"; };
 		343FD19B829811B4E20B1683 /* AuthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthModel.swift; sourceTree = "<group>"; };
 		508CBD0C631BB8FD4480D989 /* GarageLabApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarageLabApp.swift; sourceTree = "<group>"; };
+		5EBC304D0C185D4DF4A09E25 /* GarageKit-host */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "GarageKit-host"; path = ..; sourceTree = SOURCE_ROOT; };
 		611519061D97F1559C626F78 /* GarageLab.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GarageLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		628D31BDF4CDBA12D1878A99 /* HostPeopleLab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostPeopleLab.swift; sourceTree = "<group>"; };
 		87B07469F8214F6B982646BB /* Lab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lab.swift; sourceTree = "<group>"; };
-		C0C620B753C666AF18DB155A /* GarageKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GarageKit; path = ..; sourceTree = SOURCE_ROOT; };
+		8D418B2EA4920B1B1F21AE5E /* GarageLabUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = GarageLabUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0540D37061ED95A73341A11 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -42,7 +57,7 @@
 		0E3647E06D05998033DCEBEF /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				C0C620B753C666AF18DB155A /* GarageKit */,
+				5EBC304D0C185D4DF4A09E25 /* GarageKit-host */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -51,6 +66,7 @@
 			isa = PBXGroup;
 			children = (
 				611519061D97F1559C626F78 /* GarageLab.app */,
+				8D418B2EA4920B1B1F21AE5E /* GarageLabUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -59,9 +75,18 @@
 			isa = PBXGroup;
 			children = (
 				F57B9F11F7DFD98F833F5A27 /* GarageLab */,
+				E4F1EB89E56FA3B8919873A7 /* GarageLabUITests */,
 				0E3647E06D05998033DCEBEF /* Packages */,
 				29E73274ECAB9A9968DE513B /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		E4F1EB89E56FA3B8919873A7 /* GarageLabUITests */ = {
+			isa = PBXGroup;
+			children = (
+				340B7117368482F8612ADB3E /* HostPeopleUITests.swift */,
+			);
+			path = GarageLabUITests;
 			sourceTree = "<group>";
 		};
 		F57B9F11F7DFD98F833F5A27 /* GarageLab */ = {
@@ -70,6 +95,7 @@
 				343FD19B829811B4E20B1683 /* AuthModel.swift */,
 				233CA8080837D51E8DC407BF /* ContentView.swift */,
 				508CBD0C631BB8FD4480D989 /* GarageLabApp.swift */,
+				628D31BDF4CDBA12D1878A99 /* HostPeopleLab.swift */,
 				87B07469F8214F6B982646BB /* Lab.swift */,
 				F0540D37061ED95A73341A11 /* LoginView.swift */,
 			);
@@ -79,6 +105,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0CEB4AF830D9773B5985BA59 /* GarageLabUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9EB8E0E90E13205CA7AE41C /* Build configuration list for PBXNativeTarget "GarageLabUITests" */;
+			buildPhases = (
+				B2AC04BEA3052AEDAB502035 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EF3F49E8A962831DDC0BA821 /* PBXTargetDependency */,
+			);
+			name = GarageLabUITests;
+			packageProductDependencies = (
+			);
+			productName = GarageLabUITests;
+			productReference = 8D418B2EA4920B1B1F21AE5E /* GarageLabUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		3BF808EF146F7B6A8011D68D /* GarageLab */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 691FB24D6C92E6570A26C4A0 /* Build configuration list for PBXNativeTarget "GarageLab" */;
@@ -106,8 +150,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					0CEB4AF830D9773B5985BA59 = {
+						DevelopmentTeam = YBFJUNLFT6;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 3BF808EF146F7B6A8011D68D;
+					};
 					3BF808EF146F7B6A8011D68D = {
 						DevelopmentTeam = YBFJUNLFT6;
 						ProvisioningStyle = Automatic;
@@ -133,6 +182,7 @@
 			projectRoot = "";
 			targets = (
 				3BF808EF146F7B6A8011D68D /* GarageLab */,
+				0CEB4AF830D9773B5985BA59 /* GarageLabUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -145,12 +195,29 @@
 				F841A3CC411433176C73C6C1 /* AuthModel.swift in Sources */,
 				BC1990782E2CFF5565F9A8BC /* ContentView.swift in Sources */,
 				0DFA8BE140A2348977F29EEE /* GarageLabApp.swift in Sources */,
+				96713613583DECF879F02093 /* HostPeopleLab.swift in Sources */,
 				2AD55438DC8E6FE64939D522 /* Lab.swift in Sources */,
 				34526E2DBB4992D13D1E1525 /* LoginView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B2AC04BEA3052AEDAB502035 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				842DB45D09E2EEC1D7E58A0B /* HostPeopleUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EF3F49E8A962831DDC0BA821 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3BF808EF146F7B6A8011D68D /* GarageLab */;
+			targetProxy = BE72C79C75A91A9B1C37D8DF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		077B8D2CEDAC524F0CA3AC75 /* Release */ = {
@@ -294,6 +361,24 @@
 			};
 			name = Debug;
 		};
+		B487E93DFA191447EBF52E71 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.scalecode.GarageLabUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GarageLab;
+			};
+			name = Release;
+		};
 		D17EB913B0F63CE6CE484176 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -314,6 +399,24 @@
 			};
 			name = Debug;
 		};
+		D5F1B0B483D6BA4FF41C1E22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.scalecode.GarageLabUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GarageLab;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -322,6 +425,15 @@
 			buildConfigurations = (
 				D17EB913B0F63CE6CE484176 /* Debug */,
 				077B8D2CEDAC524F0CA3AC75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A9EB8E0E90E13205CA7AE41C /* Build configuration list for PBXNativeTarget "GarageLabUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5F1B0B483D6BA4FF41C1E22 /* Debug */,
+				B487E93DFA191447EBF52E71 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

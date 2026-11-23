@@ -37,6 +37,19 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
+  GarageLabUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - GarageLabUITests
+    dependencies:
+      - target: GarageLab
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.scalecode.GarageLabUITests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: GarageLab
+        CODE_SIGN_STYLE: Automatic
 schemes:
   GarageLab:
     build:
@@ -44,3 +57,7 @@ schemes:
         GarageLab: all
     run:
       config: Debug
+    test:
+      config: Debug
+      targets:
+        - GarageLabUITests

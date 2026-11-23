@@ -17,19 +17,36 @@ public enum GarageSharing {
     }
 
     /// People who may be offered for a door: the contacts minus the owner and
-    /// anyone with a grant that still works, sorted by name. Someone whose
-    /// share ran out is offered again (sharing again renews their grant).
+    /// anyone with a grant that still works, sorted by the name shown (the
+    /// host's, when it has one). Someone whose share ran out is offered again
+    /// (sharing again renews their grant).
     public static func candidates(contacts: [GarageContact], grants: [GarageGrant], owner: UUID,
-                                  now: Date = .now) -> [GarageContact] {
+                                  hostNames: [UUID: String] = [:], now: Date = .now) -> [GarageContact] {
         let granted = Set(grants.filter { isActive($0, now: now) }.map(\.granteeID))
         return contacts
             .filter { $0.id != owner && !granted.contains($0.id) }
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            .sorted { name(of: $0, hostNames: hostNames).localizedCaseInsensitiveCompare(name(of: $1, hostNames: hostNames)) == .orderedAscending }
     }
 
-    /// How to show who a grant is for: the contact's current name, else the
-    /// label saved with the grant, else a neutral word.
-    public static func displayName(for grant: GarageGrant, contacts: [GarageContact]) -> String {
+    /// How to show a contact: the host's name for them, else the server's.
+    public static func name(of contact: GarageContact, hostNames: [UUID: String] = [:]) -> String {
+        hostNames[contact.id] ?? contact.name
+    }
+
+    /// The candidates whose shown name matches `query` (all of them when it's blank).
+    public static func search(_ candidates: [GarageContact], query: String,
+                              hostNames: [UUID: String] = [:]) -> [GarageContact] {
+        let q = query.trimmingCharacters(in: .whitespaces)
+        guard !q.isEmpty else { return candidates }
+        return candidates.filter { name(of: $0, hostNames: hostNames).localizedCaseInsensitiveContains(q) }
+    }
+
+    /// How to show who a grant is for: the host's name for them, else the
+    /// contact's current name, else the label saved with the grant, else a
+    /// neutral word.
+    public static func displayName(for grant: GarageGrant, contacts: [GarageContact],
+                                   hostNames: [UUID: String] = [:]) -> String {
+        if let n = hostNames[grant.granteeID] { return n }
         if let c = contacts.first(where: { $0.id == grant.granteeID }), !c.name.isEmpty { return c.name }
         let label = grant.label.trimmingCharacters(in: .whitespacesAndNewlines)
         return label.isEmpty ? "Someone" : label

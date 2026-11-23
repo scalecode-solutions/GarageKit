@@ -14,6 +14,7 @@ public struct GarageDoorProfileView: View {
     }
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.garageHostPeople) private var hostPeople
     @State private var name = ""
     @State private var motionSeconds: Double = 12
     @State private var grants: [GarageGrant]?
@@ -26,6 +27,11 @@ public struct GarageDoorProfileView: View {
 
     private var door: GarageDoor? { engine.doors.first { $0.id == doorID } }
     private var owner: UUID { engine.config.currentUserID }
+    /// The host's names for everyone this screen can show (read while drawing,
+    /// so a rename in the host redraws the rows).
+    private var hostNames: [UUID: String] {
+        hostPeople.hostNames(contacts.map(\.id) + (grants ?? []).map(\.granteeID))
+    }
 
     public var body: some View {
         Group {
@@ -89,8 +95,10 @@ public struct GarageDoorProfileView: View {
         .sheet(isPresented: $sharing) {
             GarageShareSheet(
                 door: door,
-                candidates: GarageSharing.candidates(contacts: contacts, grants: grants ?? [], owner: owner)
+                candidates: GarageSharing.candidates(contacts: contacts, grants: grants ?? [], owner: owner,
+                                                     hostNames: hostNames)
             ) { contact, until in
+                // The saved label is the server's name, never the host's.
                 _ = try await engine.createGrant(doorID: door.id, granteeID: contact.id,
                                                  label: contact.name, expiresAt: until)
                 await loadGrants()
@@ -102,7 +110,7 @@ public struct GarageDoorProfileView: View {
             }
         }
         .confirmationDialog(
-            removing.map { "Remove \(GarageSharing.displayName(for: $0, contacts: contacts))'s access?" } ?? "",
+            removing.map { "Remove \(GarageSharing.displayName(for: $0, contacts: contacts, hostNames: hostNames))'s access?" } ?? "",
             isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
             titleVisibility: .visible,
             presenting: removing
@@ -211,10 +219,10 @@ public struct GarageDoorProfileView: View {
     }
 
     private func personRow(_ grant: GarageGrant) -> some View {
-        let name = GarageSharing.displayName(for: grant, contacts: contacts)
+        let name = GarageSharing.displayName(for: grant, contacts: contacts, hostNames: hostNames)
         let avatar = contacts.first { $0.id == grant.granteeID }?.avatar
         return HStack(spacing: 12) {
-            GarageAvatar(name: name, data: avatar)
+            GarageAvatar(id: grant.granteeID, name: name, data: avatar)
             VStack(alignment: .leading, spacing: 2) {
                 Text(name)
                 Text(GarageSharing.accessLine(grant))

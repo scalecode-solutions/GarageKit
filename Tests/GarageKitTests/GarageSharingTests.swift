@@ -49,6 +49,24 @@ struct GarageSharingTests {
         #expect(GarageSharing.displayName(for: grant(UUID()), contacts: []) == "Someone")
     }
 
+    @Test func hostNamesWinForDisplaySortAndSearch() {
+        // The host calls Bob "Ace" and Cy "zed"; Ann has no host name.
+        let host: [UUID: String] = [bob.id: "Ace", cy.id: "zed"]
+        #expect(GarageSharing.displayName(for: grant(bob.id, label: "Bob Ray"), contacts: [bob], hostNames: host) == "Ace")
+        // A grantee the host knows but who isn't a contact any more still reads the host's name.
+        #expect(GarageSharing.displayName(for: grant(cy.id, label: "old"), contacts: [], hostNames: host) == "zed")
+        // No host name: the server's contact name, then the label, as before.
+        #expect(GarageSharing.displayName(for: grant(ann.id, label: "old"), contacts: [ann], hostNames: host) == "ann Lee")
+        // Sorted by the shown name: Ace (Bob), ann Lee, zed (Cy).
+        let out = GarageSharing.candidates(contacts: [cy, ann, bob], grants: [], owner: owner, hostNames: host)
+        #expect(out.map(\.id) == [bob.id, ann.id, cy.id])
+        // Search matches the shown name, not the server's one it replaces.
+        #expect(GarageSharing.search(out, query: "ace", hostNames: host).map(\.id) == [bob.id])
+        #expect(GarageSharing.search(out, query: "Bob", hostNames: host).isEmpty)
+        #expect(GarageSharing.search(out, query: "  ", hostNames: host).count == 3)
+        #expect(GarageSharing.name(of: ann, hostNames: host) == "ann Lee")
+    }
+
     @Test func nameClashIgnoresCaseAndSpaces() {
         let doors = [GarageDoor(id: UUID(), name: "Garage", online: true, owned: true)]
         #expect(GarageSharing.nameClash("  garage ", in: doors)?.name == "Garage")

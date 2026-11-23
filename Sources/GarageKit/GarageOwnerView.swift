@@ -143,6 +143,7 @@ struct GarageShareSheet: View {
     let share: (GarageContact, Date?) async throws -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.garageHostPeople) private var hostPeople
     @State private var selection: GarageContact.ID?
     @State private var hasEnd = false
     @State private var end = Date.now.addingTimeInterval(24 * 3600)
@@ -150,9 +151,10 @@ struct GarageShareSheet: View {
     @State private var busy = false
     @State private var error: String?
 
+    private var hostNames: [UUID: String] { hostPeople.hostNames(candidates.map(\.id)) }
+
     private var shown: [GarageContact] {
-        let q = query.trimmingCharacters(in: .whitespaces)
-        return q.isEmpty ? candidates : candidates.filter { $0.name.localizedCaseInsensitiveContains(q) }
+        GarageSharing.search(candidates, query: query, hostNames: hostNames)
     }
 
     var body: some View {
@@ -166,8 +168,9 @@ struct GarageShareSheet: View {
                     ForEach(shown) { c in
                         Button { selection = c.id } label: {
                             HStack(spacing: 12) {
-                                GarageAvatar(name: c.name, data: c.avatar)
-                                Text(c.name).foregroundStyle(.primary)
+                                let name = GarageSharing.name(of: c, hostNames: hostNames)
+                                GarageAvatar(id: c.id, name: name, data: c.avatar)
+                                Text(name).foregroundStyle(.primary)
                                 Spacer()
                                 if selection == c.id {
                                     Image(systemName: "checkmark").foregroundStyle(.tint)
@@ -218,7 +221,7 @@ struct GarageShareSheet: View {
             try await share(c, hasEnd ? end : nil)
             dismiss()
         } catch {
-            self.error = "Couldn't share with \(c.name). They may not be able to see you yet."
+            self.error = "Couldn't share with \(GarageSharing.name(of: c, hostNames: hostNames)). They may not be able to see you yet."
         }
     }
 }
@@ -309,15 +312,21 @@ struct GarageAddDeviceSheet: View {
 
 // MARK: - Avatar
 
-/// A round profile image, or initials when there isn't one.
+/// A round profile image: the host's photo when it draws one, else the
+/// server's, else initials.
 struct GarageAvatar: View {
+    var id: UUID? = nil
     let name: String
     let data: Data?
     var size: CGFloat = 34
 
+    @Environment(\.garageHostPeople) private var hostPeople
+
     var body: some View {
         Group {
-            if let data, let image = UIImage(data: data) {
+            if let id, let hosted = hostPeople.avatar(id, size) {
+                hosted
+            } else if let data, let image = GarageAvatarImages.image(data) {
                 Image(uiImage: image).resizable().scaledToFill()
             } else {
                 Text(initials)
@@ -336,5 +345,20 @@ struct GarageAvatar: View {
         let parts = name.split(separator: " ").prefix(2)
         let s = parts.compactMap(\.first).map(String.init).joined()
         return s.isEmpty ? "?" : s.uppercased()
+    }
+}
+
+/// Decoded server photos, so a row doesn't decode its image again on every
+/// redraw. Keyed by the bytes; the system may evict under memory pressure.
+@MainActor
+enum GarageAvatarImages {
+    private static let cache = NSCache<NSData, UIImage>()
+
+    static func image(_ data: Data) -> UIImage? {
+        let key = data as NSData
+        if let hit = cache.object(forKey: key) { return hit }
+        guard let image = UIImage(data: data) else { return nil }
+        cache.setObject(image, forKey: key)
+        return image
     }
 }

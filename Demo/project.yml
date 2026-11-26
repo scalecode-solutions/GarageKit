@@ -12,7 +12,7 @@ packages:
     path: ..
   MvAuth-iOS:
     url: https://github.com/scalecode-solutions/MvAuth-iOS.git
-    branch: main
+    minorVersion: 0.1.0
 settings:
   base:
     DEVELOPMENT_TEAM: YBFJUNLFT6
